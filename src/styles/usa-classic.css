@@ -54,3 +54,27 @@ h5::before {
 .table-of-contents > li > ul > li > ul > li > ul > li::before {
   content: counter(toc-h5, lower-alpha) ". ";
 }
+
+/* Disable USA Classic numbering within elements with disable_numbered_headings class */
+.disable_numbered_headings h2::before,
+.disable_numbered_headings h3::before,
+.disable_numbered_headings h4::before,
+.disable_numbered_headings h5::before {
+  content: none !important;
+}
+
+/* Disable table of contents numbering for USA Classic within disable_numbered_headings */
+.disable_numbered_headings .table-of-contents > li::before,
+.disable_numbered_headings .table-of-contents > li > ul > li::before,
+.disable_numbered_headings .table-of-contents > li > ul > li > ul > li::before,
+.disable_numbered_headings
+  .table-of-contents
+  > li
+  > ul
+  > li
+  > ul
+  > li
+  > ul
+  > li::before {
+  content: none !important;
+}

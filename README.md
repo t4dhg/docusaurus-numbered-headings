@@ -121,31 +121,16 @@ module.exports = {
 
 ## Disabling Numbering on Specific Pages
 
-You can disable numbered headings on specific pages using the `DisableNumberedHeadings` component in your MDX files:
+You can disable numbered headings on specific pages using the class `disable_numbered_headings`.
 
-```jsx
-import DisableNumberedHeadings from 'docusaurus-numbered-headings/lib/DisableNumberedHeadings.jsx';
-
-<DisableNumberedHeadings />
-
-## This heading won't be numbered
-### This heading won't be numbered either
+```html
+<div class="disable_numbered_headings">
+  <h2>Heading without numbering</h2>
+  <p>This section will not have numbered headings.</p>
+</div>
 ```
 
-Alternatively, you can use the programmatic helpers:
-
-```jsx
-import {
-  disableNumberedHeadings,
-  enableNumberedHeadings,
-} from "docusaurus-numbered-headings/lib/helpers.js";
-
-// Disable numbering
-disableNumberedHeadings();
-
-// Re-enable numbering
-enableNumberedHeadings();
-```
+This implementation works because typically the reason for disabling numbered headings is to have a React component or a specific section that does not require automatic numbering. By wrapping the content in a `div` with the class `disable_numbered_headings`, the plugin will skip applying the numbering styles to that section.
 
 ## How it works
 
@@ -197,6 +182,11 @@ MIT
 Issues and pull requests are welcome! Please check the [GitHub repository](https://github.com/t4dhg/docusaurus-numbered-headings) for more information.
 
 ## Changelog
+
+### 1.5.0
+
+- Added support to disable numbered headings
+- Enhanced documentation for disabling numbering
 
 ### 1.4.0
 

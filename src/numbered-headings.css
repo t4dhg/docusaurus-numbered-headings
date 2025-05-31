@@ -50,6 +50,19 @@ ul.table-of-contents * {
   list-style: none;
 }
 
+/* Disable numbered headings within elements with disable_numbered_headings class */
+.disable_numbered_headings h2::before,
+.disable_numbered_headings h3::before,
+.disable_numbered_headings h4::before,
+.disable_numbered_headings h5::before {
+  content: none !important;
+}
+
+/* Reset counters for headings inside disable_numbered_headings to prevent interference */
+.disable_numbered_headings {
+  counter-reset: h2counter h3counter h4counter h5counter;
+}
+
 /* Disable numbered headings when the class is applied */
 .disable-numbered-headings h2::before,
 .disable-numbered-headings h3::before,
