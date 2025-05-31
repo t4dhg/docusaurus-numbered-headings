@@ -41,12 +41,3 @@ h5 {
 h5::before {
   content: counter(h5counter, lower-alpha) ". ";
 }
-
-/* Optional: Add some spacing for better visual appearance */
-h2::before,
-h3::before,
-h4::before,
-h5::before {
-  color: inherit;
-  font-weight: inherit;
-}

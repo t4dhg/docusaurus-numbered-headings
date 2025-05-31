@@ -42,12 +42,3 @@ h5::before {
   content: counter(h2counter) "." counter(h3counter) "." counter(h4counter) "."
     counter(h5counter) ". ";
 }
-
-/* Optional: Add some spacing for better visual appearance */
-h2::before,
-h3::before,
-h4::before,
-h5::before {
-  color: inherit;
-  font-weight: inherit;
-}
