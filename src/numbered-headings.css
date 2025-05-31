@@ -1,10 +1,51 @@
 /* Docusaurus Numbered Headings Plugin Styles - Generic Base */
 /* Shared styles for all numbering conventions */
 
+/* Initialize counters for main content */
+body {
+  counter-reset: h2counter;
+}
+
+/* Initialize counters for table of contents */
+.table-of-contents {
+  counter-reset: toc-h2;
+}
+
+.table-of-contents > li {
+  counter-increment: toc-h2;
+  counter-reset: toc-h3;
+}
+
+.table-of-contents > li > ul > li {
+  counter-increment: toc-h3;
+  counter-reset: toc-h4;
+}
+
+.table-of-contents > li > ul > li > ul > li {
+  counter-increment: toc-h4;
+  counter-reset: toc-h5;
+}
+
+.table-of-contents > li > ul > li > ul > li > ul > li {
+  counter-increment: toc-h5;
+}
+
+/* Base styling for heading numbers */
 h2::before,
 h3::before,
 h4::before,
 h5::before {
   color: inherit;
   font-weight: inherit;
+}
+
+/* Make links inline to prevent line breaks after numbering */
+ul.table-of-contents li a.table-of-contents__link {
+  display: inline !important;
+}
+a.table-of-contents__link {
+  display: inline !important;
+}
+ul.table-of-contents * {
+  list-style: none;
 }
