@@ -119,6 +119,34 @@ module.exports = {
 | `enabled`    | `boolean`                       | `true`       | Whether to enable numbered headings          |
 | `convention` | `"iso-2145"` \| `"usa-classic"` | `"iso-2145"` | Numbering convention to use for the headings |
 
+## Disabling Numbering on Specific Pages
+
+You can disable numbered headings on specific pages using the `DisableNumberedHeadings` component in your MDX files:
+
+```jsx
+import DisableNumberedHeadings from 'docusaurus-numbered-headings/lib/DisableNumberedHeadings.jsx';
+
+<DisableNumberedHeadings />
+
+## This heading won't be numbered
+### This heading won't be numbered either
+```
+
+Alternatively, you can use the programmatic helpers:
+
+```jsx
+import {
+  disableNumberedHeadings,
+  enableNumberedHeadings,
+} from "docusaurus-numbered-headings/lib/helpers.js";
+
+// Disable numbering
+disableNumberedHeadings();
+
+// Re-enable numbering
+enableNumberedHeadings();
+```
+
 ## How it works
 
 This plugin injects CSS that uses CSS counters to automatically number your headings based on the selected convention:

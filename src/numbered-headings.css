@@ -49,3 +49,11 @@ a.table-of-contents__link {
 ul.table-of-contents * {
   list-style: none;
 }
+
+/* Disable numbered headings when the class is applied */
+.disable-numbered-headings h2::before,
+.disable-numbered-headings h3::before,
+.disable-numbered-headings h4::before,
+.disable-numbered-headings h5::before {
+  display: none !important;
+}

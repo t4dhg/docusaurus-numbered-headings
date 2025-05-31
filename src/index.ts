@@ -29,16 +29,11 @@ export default function docusaurusNumberedHeadingsPlugin(
         return [];
       }
 
-      // Generate a dynamic client module that imports the correct CSS
-      const clientModulePath = path.resolve(
-        __dirname,
-        "./client-module-dynamic.js"
-      );
-      const clientModuleContent = `import "./numbered-headings.css";\nimport "./styles/${convention}.css";`;
-
-      fs.writeFileSync(clientModulePath, clientModuleContent);
-
-      return [clientModulePath];
+      // Return CSS files directly as client modules
+      return [
+        path.resolve(__dirname, "./numbered-headings.css"),
+        path.resolve(__dirname, `./styles/${convention}.css`),
+      ];
     },
   };
 }
