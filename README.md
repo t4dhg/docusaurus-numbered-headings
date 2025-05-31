@@ -139,55 +139,7 @@ This plugin injects CSS that uses CSS counters to automatically number your head
 
 The numbering resets appropriately when moving between different heading levels.
 
-## Example Output
-
-### ISO 2145 Convention
-
-```markdown
-# My Documentation (H1 - not numbered)
-
-## Introduction (becomes "1. Introduction")
-
-### Getting Started (becomes "1.1. Getting Started")
-
-#### Installation (becomes "1.1.1. Installation")
-
-#### Configuration (becomes "1.1.2. Configuration")
-
-### Advanced Usage (becomes "1.2. Advanced Usage")
-
-## API Reference (becomes "2. API Reference")
-
-### Methods (becomes "2.1. Methods")
-```
-
-### USA Classic Convention
-
-```markdown
-# My Documentation (H1 - not numbered)
-
-## Introduction (becomes "I. Introduction")
-
-### Getting Started (becomes "A. Getting Started")
-
-#### Installation (becomes "1. Installation")
-
-#### Configuration (becomes "2. Configuration")
-
-### Advanced Usage (becomes "B. Advanced Usage")
-
-## API Reference (becomes "II. API Reference")
-
-### Methods (becomes "A. Methods")
-```
-
 ## Styling
-
-The plugin adds subtle styling to the numbers:
-
-- Numbers appear in a slightly muted color (`#666`)
-- Normal font weight (not bold like the heading text)
-- Proper spacing between the number and heading text
 
 If you want to customize the appearance, you can override the CSS in your custom stylesheet:
 
