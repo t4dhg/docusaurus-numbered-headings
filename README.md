@@ -2,7 +2,7 @@
 
 [![npm version](https://img.shields.io/npm/v/docusaurus-numbered-headings.svg)](https://www.npmjs.com/package/docusaurus-numbered-headings)
 [![npm downloads](https://img.shields.io/npm/dm/docusaurus-numbered-headings.svg)](https://www.npmjs.com/package/docusaurus-numbered-headings)
-[![license](https://img.shields.io/npm/l/docusaurus-numbered-headings.svg)](https://github.com/t4dhg/docusaurus-numbered-headings/blob/main/LICENSE)
+[![license](https://img.shields.io/npm/l/docusaurus-numbered-headings.svg)](https://github.com/t4dhg/docusaurus-numbered-headings/blob/master/LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/t4dhg/docusaurus-numbered-headings?style=social)](https://github.com/t4dhg/docusaurus-numbered-headings)
 [![Build Status](https://github.com/t4dhg/docusaurus-numbered-headings/actions/workflows/build.yml/badge.svg)](https://github.com/t4dhg/docusaurus-numbered-headings/actions)
 
@@ -217,6 +217,12 @@ MIT
 Issues and pull requests are welcome! Please check the [GitHub repository](https://github.com/t4dhg/docusaurus-numbered-headings) for more information.
 
 ## Changelog
+
+### 1.3.0
+
+- Remove margin-right from h2-h5 pseudo-elements
+- Clean up styles across all conventions
+- Added comprehensive CI/CD workflows for automated deployment
 
 ### 1.2.0
 
