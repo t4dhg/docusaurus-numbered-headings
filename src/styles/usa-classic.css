@@ -1,0 +1,53 @@
+/* Docusaurus Numbered Headings Plugin Styles - USA Classic Convention */
+/* Format: I, A, 1, a (Roman numerals, uppercase letters, digits, lowercase letters) */
+
+body {
+  counter-reset: h2counter h3counter h4counter h5counter;
+}
+
+/* Starts on h2 because h1 is reserved for the title of the page in Docusaurus. */
+
+h2 {
+  counter-increment: h2counter;
+  counter-reset: h3counter;
+}
+
+h2::before {
+  content: counter(h2counter, upper-roman) ". ";
+}
+
+h3 {
+  counter-increment: h3counter;
+  counter-reset: h4counter;
+}
+
+h3::before {
+  content: counter(h3counter, upper-alpha) ". ";
+}
+
+h4 {
+  counter-increment: h4counter;
+  counter-reset: h5counter;
+}
+
+h4::before {
+  content: counter(h4counter, decimal) ". ";
+}
+
+h5 {
+  counter-increment: h5counter;
+}
+
+h5::before {
+  content: counter(h5counter, lower-alpha) ". ";
+}
+
+/* Optional: Add some spacing for better visual appearance */
+h2::before,
+h3::before,
+h4::before,
+h5::before {
+  color: inherit;
+  font-weight: inherit;
+  margin-right: 0.5em;
+}
