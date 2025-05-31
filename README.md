@@ -4,7 +4,7 @@
 [![npm downloads](https://img.shields.io/npm/dm/docusaurus-numbered-headings.svg)](https://www.npmjs.com/package/docusaurus-numbered-headings)
 [![license](https://img.shields.io/npm/l/docusaurus-numbered-headings.svg)](https://github.com/t4dhg/docusaurus-numbered-headings/blob/main/LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/t4dhg/docusaurus-numbered-headings?style=social)](https://github.com/t4dhg/docusaurus-numbered-headings)
-[![Build Status](https://github.com/t4dhg/docusaurus-numbered-headings/actions/workflows/ci.yml/badge.svg)](https://github.com/t4dhg/docusaurus-numbered-headings/actions)
+[![Build Status](https://github.com/t4dhg/docusaurus-numbered-headings/actions/workflows/build.yml/badge.svg)](https://github.com/t4dhg/docusaurus-numbered-headings/actions)
 
 A simple Docusaurus plugin that automatically adds numbered headings (1., 1.1., 1.1.1., etc.) to h2, h3, and h4 elements in your documentation.
 
