@@ -218,6 +218,15 @@ Issues and pull requests are welcome! Please check the [GitHub repository](https
 
 ## Changelog
 
+### 1.2.0
+
+- Enhanced package configuration and security
+- Added comprehensive `.npmignore` for optimized package size
+- Added security policy (`SECURITY.md`)
+- Improved npm discoverability with additional keywords
+- Added Node.js engine requirements (>=16.0.0)
+- Package size optimized to 5.2kB compressed
+
 ### 1.1.0
 
 - Added support for multiple numbering conventions

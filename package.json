@@ -1,6 +1,6 @@
 {
   "name": "docusaurus-numbered-headings",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "A Docusaurus plugin that automatically adds numbered headings with support for ISO 2145 and USA Classic numbering conventions",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -20,7 +20,14 @@
     "numbered",
     "documentation",
     "css",
-    "markdown"
+    "markdown",
+    "numbering",
+    "iso-2145",
+    "usa-classic",
+    "outline",
+    "table-of-contents",
+    "toc",
+    "hierarchy"
   ],
   "author": "Taig Mac Carthy",
   "license": "MIT",
@@ -41,5 +48,11 @@
   "bugs": {
     "url": "https://github.com/t4dhg/docusaurus-numbered-headings/issues"
   },
-  "homepage": "https://github.com/t4dhg/docusaurus-numbered-headings#readme"
+  "homepage": "https://github.com/t4dhg/docusaurus-numbered-headings#readme",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
 }
