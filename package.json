@@ -14,7 +14,11 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepublishOnly": "npm run build",
     "version": "npm run build",
-    "postversion": "git push && git push --tags"
+    "postversion": "git push && git push --tags",
+    "deploy": "npm run build && npm publish",
+    "deploy:patch": "npm version patch && npm run deploy",
+    "deploy:minor": "npm version minor && npm run deploy",
+    "deploy:major": "npm version major && npm run deploy"
   },
   "keywords": [
     "docusaurus",
