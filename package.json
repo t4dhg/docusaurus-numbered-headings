@@ -9,7 +9,7 @@
     "src"
   ],
   "scripts": {
-    "build": "tsc && cp src/client-module.js lib/ && cp src/numbered-headings.css lib/ && cp -r src/styles lib/",
+    "build": "tsc && cp src/numbered-headings.css lib/ && cp -r src/styles lib/",
     "prepare": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepublishOnly": "npm run build",
