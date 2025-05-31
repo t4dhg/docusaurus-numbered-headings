@@ -218,6 +218,11 @@ Issues and pull requests are welcome! Please check the [GitHub repository](https
 
 ## Changelog
 
+### 1.4.0
+
+- Added support for table of contents (ToC) numbering
+- Improved CSS for better compatibility with various themes
+
 ### 1.3.0
 
 - Remove margin-right from h2-h5 pseudo-elements

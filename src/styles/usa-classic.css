@@ -1,10 +1,6 @@
 /* Docusaurus Numbered Headings Plugin Styles - USA Classic Convention */
 /* Format: I, A, 1, a (Roman numerals, uppercase letters, digits, lowercase letters) */
 
-body {
-  counter-reset: h2counter h3counter h4counter h5counter;
-}
-
 /* Starts on h2 because h1 is reserved for the title of the page in Docusaurus. */
 
 h2 {
@@ -40,4 +36,21 @@ h5 {
 
 h5::before {
   content: counter(h5counter, lower-alpha) ". ";
+}
+
+/* Table of Contents Numbering - USA Classic Convention */
+.table-of-contents > li::before {
+  content: counter(toc-h2, upper-roman) ". ";
+}
+
+.table-of-contents > li > ul > li::before {
+  content: counter(toc-h3, upper-alpha) ". ";
+}
+
+.table-of-contents > li > ul > li > ul > li::before {
+  content: counter(toc-h4, decimal) ". ";
+}
+
+.table-of-contents > li > ul > li > ul > li > ul > li::before {
+  content: counter(toc-h5, lower-alpha) ". ";
 }

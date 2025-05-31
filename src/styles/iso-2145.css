@@ -1,9 +1,9 @@
 /* Docusaurus Numbered Headings Plugin Styles - ISO 2145 Convention */
 /* Format: 1, 1.1, 1.1.1, 1.1.1.1 (decimal numbering) */
 
-body {
+/* body {
   counter-reset: h2counter;
-}
+} */
 
 /* Starts on h2 because h1 is reserved for the title of the page in Docusaurus. */
 
@@ -41,4 +41,22 @@ h5 {
 h5::before {
   content: counter(h2counter) "." counter(h3counter) "." counter(h4counter) "."
     counter(h5counter) ". ";
+}
+
+/* Table of Contents Numbering - ISO 2145 Convention */
+ul.table-of-contents > li::before {
+  content: counter(toc-h2) ". ";
+}
+
+ul.table-of-contents > li > ul > li::before {
+  content: counter(toc-h2) "." counter(toc-h3) ". ";
+}
+
+ul.table-of-contents > li > ul > li > ul > li::before {
+  content: counter(toc-h2) "." counter(toc-h3) "." counter(toc-h4) ". ";
+}
+
+ul.table-of-contents > li > ul > li > ul > li > ul > li::before {
+  content: counter(toc-h2) "." counter(toc-h3) "." counter(toc-h4) "."
+    counter(toc-h5) ". ";
 }

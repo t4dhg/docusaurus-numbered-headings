@@ -34,7 +34,7 @@ export default function docusaurusNumberedHeadingsPlugin(
         __dirname,
         "./client-module-dynamic.js"
       );
-      const clientModuleContent = `import "./styles/${convention}.css";`;
+      const clientModuleContent = `import "./numbered-headings.css";\nimport "./styles/${convention}.css";`;
 
       fs.writeFileSync(clientModulePath, clientModuleContent);
 
