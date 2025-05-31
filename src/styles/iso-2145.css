@@ -60,3 +60,33 @@ ul.table-of-contents > li > ul > li > ul > li > ul > li::before {
   content: counter(toc-h2) "." counter(toc-h3) "." counter(toc-h4) "."
     counter(toc-h5) ". ";
 }
+
+/* Disable ISO 2145 numbering within elements with disable_numbered_headings class */
+.disable_numbered_headings h2::before,
+.disable_numbered_headings h3::before,
+.disable_numbered_headings h4::before,
+.disable_numbered_headings h5::before {
+  content: none !important;
+}
+
+/* Disable table of contents numbering for ISO 2145 within disable_numbered_headings */
+.disable_numbered_headings ul.table-of-contents > li::before,
+.disable_numbered_headings ul.table-of-contents > li > ul > li::before,
+.disable_numbered_headings
+  ul.table-of-contents
+  > li
+  > ul
+  > li
+  > ul
+  > li::before,
+.disable_numbered_headings
+  ul.table-of-contents
+  > li
+  > ul
+  > li
+  > ul
+  > li
+  > ul
+  > li::before {
+  content: none !important;
+}
