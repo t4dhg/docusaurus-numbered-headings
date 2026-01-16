@@ -1,6 +1,6 @@
 {
   "name": "docusaurus-numbered-headings",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "A Docusaurus plugin that automatically adds numbered headings with support for ISO 2145 and USA Classic numbering conventions",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
