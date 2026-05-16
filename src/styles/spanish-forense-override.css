@@ -1,0 +1,87 @@
+/* Per-document override: force Spanish Forense inside .numbered_headings_spanish_forense */
+/* Scoped rules win over the unscoped global rules by class specificity.                  */
+
+/* @counter-style is global by name; redefining here keeps the override file
+   self-contained when the global convention isn't Spanish Forense. The
+   definition is byte-identical to spanish-forense.css to avoid drift. */
+@counter-style spanish-ordinal {
+  system: fixed;
+  symbols: "Primero" "Segundo" "Tercero" "Cuarto" "Quinto" "Sexto" "Séptimo"
+    "Octavo" "Noveno" "Décimo" "Undécimo" "Duodécimo" "Decimotercero"
+    "Decimocuarto" "Decimoquinto" "Decimosexto" "Decimoséptimo" "Decimoctavo"
+    "Decimonoveno" "Vigésimo";
+  suffix: "";
+}
+
+.numbered_headings_spanish_forense h2 {
+  counter-increment: h2counter;
+  counter-reset: h3counter;
+}
+
+.numbered_headings_spanish_forense h2::before {
+  content: counter(h2counter, upper-roman) ". ";
+}
+
+.numbered_headings_spanish_forense h3 {
+  counter-increment: h3counter;
+  counter-reset: h4counter;
+}
+
+.numbered_headings_spanish_forense h3::before {
+  content: counter(h3counter, spanish-ordinal) ".- ";
+}
+
+.numbered_headings_spanish_forense h4 {
+  counter-increment: h4counter;
+  counter-reset: h5counter;
+}
+
+.numbered_headings_spanish_forense h4::before {
+  content: counter(h4counter, decimal) ". ";
+}
+
+.numbered_headings_spanish_forense h5 {
+  counter-increment: h5counter;
+}
+
+.numbered_headings_spanish_forense h5::before {
+  content: counter(h5counter, lower-alpha) ". ";
+}
+
+/* TOC override via :has() — the right-rail TOC lives outside the wrapped body. */
+
+:root:has(.numbered_headings_spanish_forense)
+  .table-of-contents
+  > li::before {
+  content: counter(toc-h2, upper-roman) ". ";
+}
+
+:root:has(.numbered_headings_spanish_forense)
+  .table-of-contents
+  > li
+  > ul
+  > li::before {
+  content: counter(toc-h3, spanish-ordinal) ".- ";
+}
+
+:root:has(.numbered_headings_spanish_forense)
+  .table-of-contents
+  > li
+  > ul
+  > li
+  > ul
+  > li::before {
+  content: counter(toc-h4, decimal) ". ";
+}
+
+:root:has(.numbered_headings_spanish_forense)
+  .table-of-contents
+  > li
+  > ul
+  > li
+  > ul
+  > li
+  > ul
+  > li::before {
+  content: counter(toc-h5, lower-alpha) ". ";
+}

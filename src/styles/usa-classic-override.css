@@ -1,0 +1,73 @@
+/* Per-document override: force USA Classic inside .numbered_headings_usa_classic */
+/* Scoped rules win over the unscoped global rules by class specificity.          */
+
+.numbered_headings_usa_classic h2 {
+  counter-increment: h2counter;
+  counter-reset: h3counter;
+}
+
+.numbered_headings_usa_classic h2::before {
+  content: counter(h2counter, upper-roman) ". ";
+}
+
+.numbered_headings_usa_classic h3 {
+  counter-increment: h3counter;
+  counter-reset: h4counter;
+}
+
+.numbered_headings_usa_classic h3::before {
+  content: counter(h3counter, upper-alpha) ". ";
+}
+
+.numbered_headings_usa_classic h4 {
+  counter-increment: h4counter;
+  counter-reset: h5counter;
+}
+
+.numbered_headings_usa_classic h4::before {
+  content: counter(h4counter, decimal) ". ";
+}
+
+.numbered_headings_usa_classic h5 {
+  counter-increment: h5counter;
+}
+
+.numbered_headings_usa_classic h5::before {
+  content: counter(h5counter, lower-alpha) ". ";
+}
+
+/* TOC override via :has() — the right-rail TOC lives outside the wrapped body. */
+
+:root:has(.numbered_headings_usa_classic) .table-of-contents > li::before {
+  content: counter(toc-h2, upper-roman) ". ";
+}
+
+:root:has(.numbered_headings_usa_classic)
+  .table-of-contents
+  > li
+  > ul
+  > li::before {
+  content: counter(toc-h3, upper-alpha) ". ";
+}
+
+:root:has(.numbered_headings_usa_classic)
+  .table-of-contents
+  > li
+  > ul
+  > li
+  > ul
+  > li::before {
+  content: counter(toc-h4, decimal) ". ";
+}
+
+:root:has(.numbered_headings_usa_classic)
+  .table-of-contents
+  > li
+  > ul
+  > li
+  > ul
+  > li
+  > ul
+  > li::before {
+  content: counter(toc-h5, lower-alpha) ". ";
+}
