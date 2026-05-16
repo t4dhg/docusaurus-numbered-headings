@@ -1,0 +1,92 @@
+/* Docusaurus Numbered Headings Plugin Styles - Spanish Forense Convention   */
+/* Format: I, Primero.-, 1, a                                                 */
+/* (upper-roman + written-out Spanish ordinals + decimal + lowercase letters) */
+
+/* Custom counter style for written-out Spanish ordinals. CSS @counter-style
+   has no built-in for this. Twenty entries covers any plausible escrito;
+   beyond that the counter falls back to decimal automatically. */
+@counter-style spanish-ordinal {
+  system: fixed;
+  symbols: "Primero" "Segundo" "Tercero" "Cuarto" "Quinto" "Sexto" "Séptimo"
+    "Octavo" "Noveno" "Décimo" "Undécimo" "Duodécimo" "Decimotercero"
+    "Decimocuarto" "Decimoquinto" "Decimosexto" "Decimoséptimo" "Decimoctavo"
+    "Decimonoveno" "Vigésimo";
+  suffix: "";
+}
+
+/* Starts on h2 because h1 is reserved for the title of the page in Docusaurus. */
+
+h2 {
+  counter-increment: h2counter;
+  counter-reset: h3counter;
+}
+
+h2::before {
+  content: counter(h2counter, upper-roman) ". ";
+}
+
+h3 {
+  counter-increment: h3counter;
+  counter-reset: h4counter;
+}
+
+h3::before {
+  content: counter(h3counter, spanish-ordinal) ".- ";
+}
+
+h4 {
+  counter-increment: h4counter;
+  counter-reset: h5counter;
+}
+
+h4::before {
+  content: counter(h4counter, decimal) ". ";
+}
+
+h5 {
+  counter-increment: h5counter;
+}
+
+h5::before {
+  content: counter(h5counter, lower-alpha) ". ";
+}
+
+/* Table of Contents Numbering - Spanish Forense Convention */
+.table-of-contents > li::before {
+  content: counter(toc-h2, upper-roman) ". ";
+}
+
+.table-of-contents > li > ul > li::before {
+  content: counter(toc-h3, spanish-ordinal) ".- ";
+}
+
+.table-of-contents > li > ul > li > ul > li::before {
+  content: counter(toc-h4, decimal) ". ";
+}
+
+.table-of-contents > li > ul > li > ul > li > ul > li::before {
+  content: counter(toc-h5, lower-alpha) ". ";
+}
+
+/* Disable Spanish Forense numbering within .disable_numbered_headings */
+.disable_numbered_headings h2::before,
+.disable_numbered_headings h3::before,
+.disable_numbered_headings h4::before,
+.disable_numbered_headings h5::before {
+  content: none !important;
+}
+
+.disable_numbered_headings .table-of-contents > li::before,
+.disable_numbered_headings .table-of-contents > li > ul > li::before,
+.disable_numbered_headings .table-of-contents > li > ul > li > ul > li::before,
+.disable_numbered_headings
+  .table-of-contents
+  > li
+  > ul
+  > li
+  > ul
+  > li
+  > ul
+  > li::before {
+  content: none !important;
+}

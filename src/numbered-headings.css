@@ -70,3 +70,31 @@ ul.table-of-contents * {
 .disable-numbered-headings h5::before {
   display: none !important;
 }
+
+/* When a doc opts out via frontmatter, the wrapper class lives inside the     */
+/* markdown body. The right-rail Table of Contents lives outside that body, so */
+/* we scope its suppression via :root:has(...) — requires modern browsers.     */
+:root:has(.disable_numbered_headings) ul.table-of-contents > li::before,
+:root:has(.disable_numbered_headings)
+  ul.table-of-contents
+  > li
+  > ul
+  > li::before,
+:root:has(.disable_numbered_headings)
+  ul.table-of-contents
+  > li
+  > ul
+  > li
+  > ul
+  > li::before,
+:root:has(.disable_numbered_headings)
+  ul.table-of-contents
+  > li
+  > ul
+  > li
+  > ul
+  > li
+  > ul
+  > li::before {
+  content: none !important;
+}

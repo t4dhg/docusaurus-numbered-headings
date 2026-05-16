@@ -2,6 +2,8 @@ import type { LoadContext, Plugin } from "@docusaurus/types";
 import path from "path";
 import fs from "fs";
 
+export { remarkFrontmatterToggle } from "./remark-frontmatter-toggle";
+
 export interface PluginOptions {
   /**
    * Whether to enable numbered headings
@@ -12,7 +14,7 @@ export interface PluginOptions {
    * Numbering convention to use
    * @default "iso-2145"
    */
-  convention?: "iso-2145" | "usa-classic";
+  convention?: "iso-2145" | "usa-classic" | "spanish-forense";
 }
 
 export default function docusaurusNumberedHeadingsPlugin(
@@ -29,10 +31,16 @@ export default function docusaurusNumberedHeadingsPlugin(
         return [];
       }
 
-      // Return CSS files directly as client modules
+      // Base CSS + the configured global convention + both per-doc override
+      // stylesheets. Override stylesheets define class-scoped rules that win
+      // over the global rules by specificity when a doc opts in via the
+      // `remarkFrontmatterToggle` remark plugin.
       return [
         path.resolve(__dirname, "./numbered-headings.css"),
         path.resolve(__dirname, `./styles/${convention}.css`),
+        path.resolve(__dirname, "./styles/iso-2145-override.css"),
+        path.resolve(__dirname, "./styles/usa-classic-override.css"),
+        path.resolve(__dirname, "./styles/spanish-forense-override.css"),
       ];
     },
   };
