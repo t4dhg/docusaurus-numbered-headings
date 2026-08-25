@@ -1,24 +1,34 @@
 {
   "name": "docusaurus-numbered-headings",
-  "version": "1.6.0",
+  "version": "2.0.0",
   "description": "A Docusaurus plugin that automatically adds numbered headings with support for ISO 2145 and USA Classic numbering conventions",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "main": "./lib/index.js",
+  "module": "./lib/index.mjs",
+  "types": "./lib/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "import": "./lib/index.mjs",
+      "require": "./lib/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "sideEffects": [
+    "**/*.css"
+  ],
   "files": [
     "lib",
-    "src"
+    "CHANGELOG.md",
+    "CONTRIBUTING.md",
+    "MIGRATION.md",
+    "SECURITY.md"
   ],
   "scripts": {
-    "build": "tsc && cp src/numbered-headings.css lib/ && cp -r src/styles lib/",
-    "prepare": "npm run build",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "prepublishOnly": "npm run build",
-    "version": "npm run build",
-    "postversion": "git push && git push --tags",
-    "deploy": "npm run build && npm publish",
-    "deploy:patch": "npm version patch && npm run deploy",
-    "deploy:minor": "npm version minor && npm run deploy",
-    "deploy:major": "npm version major && npm run deploy"
+    "clean": "node scripts/clean.mjs",
+    "build": "npm run clean && tsup && node scripts/copy-assets.mjs",
+    "typecheck": "tsc --noEmit",
+    "test:unit": "node --test test/*.test.cjs",
+    "prepublishOnly": "npm run verify"
   },
   "keywords": [
     "docusaurus",
@@ -39,14 +49,21 @@
   "author": "Taig Mac Carthy",
   "license": "MIT",
   "peerDependencies": {
-    "@docusaurus/core": "^2.0.0 || >=3.0.0-0",
-    "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0",
-    "react-dom": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0"
+    "@docusaurus/core": "^3.0.0",
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0"
   },
   "devDependencies": {
-    "@docusaurus/types": "^3.0.0",
-    "@types/node": "^18.0.0",
-    "typescript": "^4.9.0"
+    "@docusaurus/core": "3.10.2",
+    "@docusaurus/preset-classic": "3.10.2",
+    "@docusaurus/types": "3.10.2",
+    "@types/node": "20.19.43",
+    "postcss": "8.5.6",
+    "prettier": "3.9.6",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "tsup": "8.5.1",
+    "typescript": "5.9.3"
   },
   "repository": {
     "type": "git",
@@ -57,7 +74,7 @@
   },
   "homepage": "https://github.com/t4dhg/docusaurus-numbered-headings#readme",
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=20.0.0"
   },
   "publishConfig": {
     "access": "public"
