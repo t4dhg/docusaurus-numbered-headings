@@ -1,27 +1,15 @@
 import type { LoadContext, Plugin } from "@docusaurus/types";
 import path from "path";
-import fs from "fs";
+import { normalizeOptions, type PluginOptions } from "./options";
 
 export { remarkFrontmatterToggle } from "./remark-frontmatter-toggle";
-
-export interface PluginOptions {
-  /**
-   * Whether to enable numbered headings
-   * @default true
-   */
-  enabled?: boolean;
-  /**
-   * Numbering convention to use
-   * @default "iso-2145"
-   */
-  convention?: "iso-2145" | "usa-classic" | "spanish-forense";
-}
+export type { Convention, PluginOptions } from "./options";
 
 export default function docusaurusNumberedHeadingsPlugin(
-  context: LoadContext,
+  _context: LoadContext,
   options: PluginOptions = {}
 ): Plugin<void> {
-  const { enabled = true, convention = "iso-2145" } = options;
+  const { enabled, convention } = normalizeOptions(options);
 
   return {
     name: "docusaurus-numbered-headings",
