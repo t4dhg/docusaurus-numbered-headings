@@ -34,17 +34,25 @@
 
 type AnyNode = { type: string; [key: string]: unknown };
 type Root = { type: "root"; children: AnyNode[] };
-type VFileLike = { data?: { frontMatter?: Record<string, unknown> } };
+type VFileLike = {
+  data?: { frontMatter?: Record<string, unknown> };
+  path?: string;
+};
 
 const TOP_LEVEL_PRESERVE = new Set(["mdxjsEsm", "yaml", "toml"]);
 
-function classForFrontmatter(value: unknown): string | null {
+function classForFrontmatter(value: unknown, filePath?: string): string {
   if (value === false) return "disable_numbered_headings";
   if (value === "iso-2145") return "numbered_headings_iso_2145";
   if (value === "usa-classic") return "numbered_headings_usa_classic";
   if (value === "spanish-forense") return "numbered_headings_spanish_forense";
-  // `true`, `undefined`, or anything else: no override, use the global default.
-  return null;
+
+  throw new TypeError(
+    '[docusaurus-numbered-headings] frontmatter "numbered_headings"' +
+      (filePath ? ` in ${filePath}` : "") +
+      " must be true, false, iso-2145, usa-classic, or spanish-forense; received " +
+      JSON.stringify(value),
+  );
 }
 
 export function remarkFrontmatterToggle() {
@@ -52,8 +60,12 @@ export function remarkFrontmatterToggle() {
     const fm = file?.data?.frontMatter;
     if (!fm) return;
 
-    const wrapperClass = classForFrontmatter(fm.numbered_headings);
-    if (!wrapperClass) return;
+    if (!Object.prototype.hasOwnProperty.call(fm, "numbered_headings")) return;
+
+    const value = fm.numbered_headings;
+    if (value === true) return;
+
+    const wrapperClass = classForFrontmatter(value, file?.path);
 
     const preserved: AnyNode[] = [];
     const wrapped: AnyNode[] = [];
