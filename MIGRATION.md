@@ -1,57 +1,78 @@
 # Migrating to 2.0
 
-Version 2.0 is the supported line for Docusaurus 3. Upgrade the host project before upgrading this package.
+Version 2.0 is the Docusaurus 3 line. Upgrade the host project before upgrading this package.
 
-## Requirements
+## Breaking requirements
 
-- Node.js 20 or newer
-- `@docusaurus/core` 3.x
-- React and React DOM 18 or newer
+- Node.js 20+
+- `@docusaurus/core` and `@docusaurus/types` 3.x
+- React and React DOM 18 or 19
 
-Install the new major version with your package manager:
+## Upgrade checklist
 
-```shell
-npm install docusaurus-numbered-headings@^2
-```
+1. Upgrade the host site and lockfile to the requirements above.
+2. Install `docusaurus-numbered-headings@^2`.
+3. Replace any unsupported plugin options or `numbered_headings` frontmatter values.
+4. Update bare heading and TOC CSS overrides to the scoped selectors below.
+5. Rebuild the site and check both desktop and mobile documentation TOCs.
 
-## Plugin configuration
+`npm run verify` is for contributors to this repository only; package consumers should build and test their own Docusaurus site.
 
-The Docusaurus plugin configuration remains the same:
+## Options and frontmatter validation
 
-```js
-export default {
-  plugins: [
-    ["docusaurus-numbered-headings", { convention: "iso-2145", enabled: true }],
-  ],
-};
-```
+The plugin options are strictly validated: `enabled` must be a boolean and `convention` must be `iso-2145`, `usa-classic`, or `spanish-forense`.
 
-Supported conventions are `iso-2145`, `usa-classic`, and `spanish-forense`. Invalid option types or convention names now throw a `TypeError` during configuration.
+The `numbered_headings` frontmatter key accepts exactly `true`, `false`, `iso-2145`, `usa-classic`, or `spanish-forense`. Omitted and `true` preserve the configured convention. Any present unsupported value throws a path-aware `TypeError` when a document path is available, instead of silently falling back.
 
-## Module loading
-
-Version 2.0 publishes explicit CommonJS, ESM, and type entry points. Existing `require` calls continue to work, and ESM consumers can use a default import:
+Register the named remark export only when per-document control is needed:
 
 ```js
-import numberedHeadings from "docusaurus-numbered-headings";
-```
-
-## Per-document frontmatter
-
-To use per-document control, register the exported remark plugin in the Docusaurus docs preset:
-
-```js
-import { remarkFrontmatterToggle } from "docusaurus-numbered-headings";
+import numberedHeadings, {
+  remarkFrontmatterToggle,
+} from "docusaurus-numbered-headings";
 
 export default {
+  plugins: [[numberedHeadings, { convention: "iso-2145" }]],
   presets: [
     ["classic", { docs: { remarkPlugins: [remarkFrontmatterToggle] } }],
   ],
 };
 ```
 
-The `numbered_headings` frontmatter value may be `true`, `false`, `iso-2145`, `usa-classic`, or `spanish-forense`. A present unsupported value now throws a path-aware `TypeError` instead of falling back silently.
+## Module loading
 
-## Custom CSS
+The package supports ESM and CommonJS. ESM consumers import the default plugin and named `remarkFrontmatterToggle` export:
 
-Heading rules are scoped to `.theme-doc-markdown`. Table-of-contents rules target the Docusaurus 3 desktop and mobile TOC containers under `.main-wrapper`. Update custom overrides that relied on bare heading or `.table-of-contents` selectors.
+```js
+import numberedHeadings, {
+  remarkFrontmatterToggle,
+} from "docusaurus-numbered-headings";
+```
+
+CommonJS consumers require the same default and named exports:
+
+```js
+const {
+  default: numberedHeadings,
+  remarkFrontmatterToggle,
+} = require("docusaurus-numbered-headings");
+```
+
+## Scoped CSS
+
+Document counters are beneath `.theme-doc-markdown`. Desktop and mobile TOC counters are beneath `.main-wrapper` and use `:has()` with `:is()` to follow document-level frontmatter. Migrate bare overrides such as `h2::before` or unscoped `.table-of-contents` rules to scoped selectors:
+
+```css
+.theme-doc-markdown h2::before {
+  color: var(--ifm-color-primary);
+}
+
+.main-wrapper
+  :is(.theme-doc-toc-desktop, .theme-doc-toc-mobile)
+  .table-of-contents
+  > li::before {
+  color: var(--ifm-color-primary);
+}
+```
+
+Check the site in a modern browser with `:has()` support when per-document TOC behavior is important.

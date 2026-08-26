@@ -4,23 +4,32 @@ Contributions that improve compatibility, correctness, documentation, or test co
 
 ## Development setup
 
-Use Node.js 20 or newer and install the locked dependencies:
+Use Node.js 20+ and install the locked dependencies:
 
 ```shell
 npm ci
 ```
 
-Keep changes focused and add a regression test for behavior changes. Before submitting a change, run:
+Before submitting a change, run the single local gate:
 
 ```shell
-npm run build
-npm run typecheck
-npm run test:unit
-npm run test:package
+npm run verify
 ```
 
-The package test builds and installs the generated archive in disposable CommonJS and ESM consumers. Generated `lib` output is not committed.
+`npm run verify` checks formatting, types, a fresh build, unit tests, package consumers, the Docusaurus fixture, and production dependency audit policy. Generated `lib` output is build output and is not committed.
 
-## Reports and proposals
+## Focused checks
+
+- `node --test test/options.test.cjs` checks plugin option validation while working on options.
+- `node --test test/documentation.test.cjs` checks public documentation and metadata contract changes.
+- `npm run test:package` packs the package and checks CommonJS, ESM, and TypeScript consumers.
+- `npm run test:docusaurus` builds the fixture site for disabled, ISO, USA, and Spanish conventions; it expects scoped CSS for document headings and both desktop/mobile TOCs.
+- `npm run format` applies the repository formatter. Use it before the full verification gate when Markdown, JSON, or source formatting changes.
+
+Add or update tests and public documentation whenever behavior or the public contract changes.
+
+## Reports and releases
 
 Use an issue for reproducible bugs or narrowly described proposals. For vulnerabilities, follow [SECURITY.md](SECURITY.md) instead of opening a public issue.
+
+Contributors do not manually bump versions, publish packages, create tags, or create a Release. Merged contributions do not authorize a release; only the maintainer-owned release workflow may publish after review.
