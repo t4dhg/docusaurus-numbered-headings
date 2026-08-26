@@ -1,0 +1,242 @@
+import assert from "node:assert/strict";
+import {
+  copyFile,
+  mkdir,
+  mkdtemp,
+  rm,
+  stat,
+  symlink,
+  writeFile,
+} from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { dirname, join, resolve } from "node:path";
+import { spawnSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
+
+const rootDir = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+const packageName = "docusaurus-numbered-headings";
+const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
+const expectedFiles = [
+  "CHANGELOG.md",
+  "CONTRIBUTING.md",
+  "LICENSE",
+  "MIGRATION.md",
+  "README.md",
+  "SECURITY.md",
+  "lib/index.d.mts",
+  "lib/index.d.ts",
+  "lib/index.js",
+  "lib/index.mjs",
+  "lib/numbered-headings.css",
+  "lib/styles/iso-2145-override.css",
+  "lib/styles/iso-2145.css",
+  "lib/styles/spanish-forense-override.css",
+  "lib/styles/spanish-forense.css",
+  "lib/styles/usa-classic-override.css",
+  "lib/styles/usa-classic.css",
+  "package.json",
+].sort();
+const expectedClientModules = [
+  "numbered-headings.css",
+  "styles/iso-2145.css",
+  "styles/iso-2145-override.css",
+  "styles/usa-classic-override.css",
+  "styles/spanish-forense-override.css",
+];
+
+const temporaryRoot = await mkdtemp(join(tmpdir(), "dnh-package-test-"));
+const cacheDir = join(temporaryRoot, "npm-cache");
+const packDir = join(temporaryRoot, "pack");
+
+function run(command, args, { cwd = rootDir } = {}) {
+  const result = spawnSync(command, args, {
+    cwd,
+    encoding: "utf8",
+    env: {
+      ...process.env,
+      npm_config_cache: cacheDir,
+      npm_config_update_notifier: "false",
+    },
+    shell: false,
+  });
+
+  if (result.error) throw result.error;
+  if (result.status !== 0) {
+    throw new Error(
+      [
+        `${command} ${args.join(" ")} exited with status ${result.status}`,
+        result.stdout.trim(),
+        result.stderr.trim(),
+      ]
+        .filter(Boolean)
+        .join("\n"),
+    );
+  }
+  return result.stdout;
+}
+
+async function writeJson(file, value) {
+  await writeFile(file, `${JSON.stringify(value, null, 2)}\n`);
+}
+
+async function installConsumer(name, type, entryFile, entrySource, tarball) {
+  const consumerDir = join(temporaryRoot, name);
+  await mkdir(consumerDir, { recursive: true });
+  await writeJson(join(consumerDir, "package.json"), {
+    private: true,
+    type,
+  });
+  run(
+    npmCommand,
+    [
+      "install",
+      "--ignore-scripts",
+      "--no-audit",
+      "--no-fund",
+      "--legacy-peer-deps",
+      tarball,
+    ],
+    { cwd: consumerDir },
+  );
+  await writeFile(join(consumerDir, entryFile), entrySource);
+  run(process.execPath, [entryFile], { cwd: consumerDir });
+  return consumerDir;
+}
+
+const commonJsConsumer = `
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const path = require("node:path");
+const packageApi = require("${packageName}");
+
+assert.equal(typeof packageApi.default, "function");
+assert.equal(typeof packageApi.remarkFrontmatterToggle, "function");
+const packageRoot = path.dirname(require.resolve("${packageName}/package.json"));
+const expected = ${JSON.stringify(expectedClientModules)}.map((file) =>
+  path.join(packageRoot, "lib", file),
+);
+const modules = packageApi.default({}, {}).getClientModules();
+assert.deepEqual(modules, expected);
+for (const modulePath of modules) assert.equal(fs.existsSync(modulePath), true);
+`;
+
+const esmConsumer = `
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import path from "node:path";
+import { createRequire } from "node:module";
+import plugin, { remarkFrontmatterToggle } from "${packageName}";
+
+assert.equal(typeof plugin, "function");
+assert.equal(typeof remarkFrontmatterToggle, "function");
+const require = createRequire(import.meta.url);
+const packageRoot = path.dirname(require.resolve("${packageName}/package.json"));
+const expected = ${JSON.stringify(expectedClientModules)}.map((file) =>
+  path.join(packageRoot, "lib", file),
+);
+const modules = plugin({}, {}).getClientModules();
+assert.deepEqual(modules, expected);
+for (const modulePath of modules) assert.equal(fs.existsSync(modulePath), true);
+`;
+
+const commonJsTypescriptConsumer = `
+import packageApi = require("${packageName}");
+import type { Convention, PluginOptions } from "${packageName}";
+
+const convention: Convention = "usa-classic";
+const options = { enabled: true, convention } satisfies PluginOptions;
+const plugin = packageApi.default(
+  {} as Parameters<typeof packageApi.default>[0],
+  options,
+);
+const transform = packageApi.remarkFrontmatterToggle();
+
+void plugin;
+void transform;
+`;
+
+async function linkDocusaurusTypes(consumerDir) {
+  const docusaurusScope = join(consumerDir, "node_modules", "@docusaurus");
+  await mkdir(docusaurusScope, { recursive: true });
+  await symlink(
+    resolve(rootDir, "node_modules", "@docusaurus", "types"),
+    join(docusaurusScope, "types"),
+    "junction",
+  );
+}
+
+function runTypeScript(consumerDir, entryFile) {
+  run(
+    process.execPath,
+    [
+      resolve(rootDir, "node_modules", "typescript", "bin", "tsc"),
+      "--noEmit",
+      "--strict",
+      "--skipLibCheck",
+      "--target",
+      "ES2022",
+      "--module",
+      "NodeNext",
+      "--moduleResolution",
+      "NodeNext",
+      entryFile,
+    ],
+    { cwd: consumerDir },
+  );
+}
+
+try {
+  await mkdir(cacheDir, { recursive: true });
+  await mkdir(packDir, { recursive: true });
+
+  const packOutput = run(npmCommand, [
+    "pack",
+    "--json",
+    "--ignore-scripts",
+    "--pack-destination",
+    packDir,
+  ]);
+  const packReports = JSON.parse(packOutput);
+  assert.equal(packReports.length, 1);
+  const [packReport] = packReports;
+  assert.deepEqual(
+    packReport.files.map(({ path }) => path).sort(),
+    expectedFiles,
+  );
+
+  const tarball = join(packDir, packReport.filename);
+  assert.equal((await stat(tarball)).isFile(), true);
+
+  const commonJsConsumerDir = await installConsumer(
+    "commonjs-consumer",
+    "commonjs",
+    "smoke.cjs",
+    commonJsConsumer,
+    tarball,
+  );
+  const moduleConsumerDir = await installConsumer(
+    "esm-consumer",
+    "module",
+    "smoke.mjs",
+    esmConsumer,
+    tarball,
+  );
+
+  await linkDocusaurusTypes(commonJsConsumerDir);
+  await writeFile(
+    join(commonJsConsumerDir, "typescript-consumer.cts"),
+    commonJsTypescriptConsumer,
+  );
+  runTypeScript(commonJsConsumerDir, "typescript-consumer.cts");
+
+  await linkDocusaurusTypes(moduleConsumerDir);
+  await copyFile(
+    resolve(rootDir, "test", "fixtures", "typescript-consumer.mts"),
+    join(moduleConsumerDir, "typescript-consumer.mts"),
+  );
+  runTypeScript(moduleConsumerDir, "typescript-consumer.mts");
+
+  console.log("Packed package contract verified.");
+} finally {
+  await rm(temporaryRoot, { recursive: true, force: true });
+}

@@ -7,9 +7,14 @@
   "types": "./lib/index.d.ts",
   "exports": {
     ".": {
-      "types": "./lib/index.d.ts",
-      "import": "./lib/index.mjs",
-      "require": "./lib/index.js"
+      "import": {
+        "types": "./lib/index.d.mts",
+        "default": "./lib/index.mjs"
+      },
+      "require": {
+        "types": "./lib/index.d.ts",
+        "default": "./lib/index.js"
+      }
     },
     "./package.json": "./package.json"
   },
@@ -28,6 +33,7 @@
     "build": "npm run clean && tsup && node scripts/copy-assets.mjs",
     "typecheck": "tsc --noEmit",
     "test:unit": "node --test test/*.test.cjs",
+    "test:package": "npm run build && node scripts/test-package.mjs",
     "prepublishOnly": "npm run verify"
   },
   "keywords": [

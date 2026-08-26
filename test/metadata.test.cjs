@@ -9,9 +9,14 @@ test("declares the 2.x support and package contract", () => {
   assert.equal(pkg.peerDependencies.react, "^18.0.0 || ^19.0.0");
   assert.equal(pkg.peerDependencies["react-dom"], "^18.0.0 || ^19.0.0");
   assert.deepEqual(pkg.exports["."], {
-    types: "./lib/index.d.ts",
-    import: "./lib/index.mjs",
-    require: "./lib/index.js",
+    import: {
+      types: "./lib/index.d.mts",
+      default: "./lib/index.mjs",
+    },
+    require: {
+      types: "./lib/index.d.ts",
+      default: "./lib/index.js",
+    },
   });
   assert.equal(pkg.exports["./package.json"], "./package.json");
   assert.deepEqual(pkg.files, [
@@ -21,7 +26,13 @@ test("declares the 2.x support and package contract", () => {
     "MIGRATION.md",
     "SECURITY.md",
   ]);
-  for (const forbidden of ["postversion", "deploy", "deploy:patch", "deploy:minor", "deploy:major"]) {
+  for (const forbidden of [
+    "postversion",
+    "deploy",
+    "deploy:patch",
+    "deploy:minor",
+    "deploy:major",
+  ]) {
     assert.equal(pkg.scripts[forbidden], undefined);
   }
 });

@@ -17,7 +17,7 @@ export default defineConfig([
     outDir: "lib",
     platform: "node",
     target: "node20",
-    dts: false,
+    dts: true,
     clean: false,
     sourcemap: false,
     outExtension: () => ({ js: ".mjs" }),
