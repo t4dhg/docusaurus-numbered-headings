@@ -2,12 +2,78 @@ const fs = require("node:fs");
 const path = require("node:path");
 const test = require("node:test");
 const assert = require("node:assert/strict");
+const postcss = require("postcss");
 
 const repositoryRoot = path.resolve(__dirname, "..");
 const pkg = require("../package.json");
 
 function read(relativePath) {
   return fs.readFileSync(path.join(repositoryRoot, relativePath), "utf8");
+}
+
+function assertUnreleasedReleaseCandidate(document) {
+  const headingPattern = /^## 2\.0\.0 - Unreleased \(release candidate\)$/m;
+  const heading = headingPattern.exec(document);
+  assert.ok(heading, "missing the unreleased 2.0.0 release-candidate heading");
+
+  const sectionStart = heading.index + heading[0].length;
+  const remainingDocument = document.slice(sectionStart);
+  const nextReleaseOffset = remainingDocument.search(/^##\s+/m);
+  const section =
+    nextReleaseOffset === -1
+      ? remainingDocument
+      : remainingDocument.slice(0, nextReleaseOffset);
+
+  for (const positiveClaim of [
+    /\b(?:is|was|has been) published\b/iu,
+    /\b(?:is|was|has been) tagged\b/iu,
+    /\b(?:is|was|has been) (?:a )?GitHub Release\b/iu,
+  ]) {
+    assert.doesNotMatch(
+      section,
+      positiveClaim,
+      `2.0.0 must remain unreleased: ${positiveClaim}`,
+    );
+  }
+}
+
+function cssExamples(document) {
+  return [
+    ...document.matchAll(/^```css[^\n]*\n(?<css>[\s\S]*?)^```\s*$/gimu),
+  ].map((match) => match.groups.css);
+}
+
+function assertScopedCssExamples(document, documentName) {
+  const examples = cssExamples(document);
+  assert.ok(examples.length > 0, `${documentName} must contain a CSS example`);
+
+  for (const [index, css] of examples.entries()) {
+    const root = postcss.parse(css, {
+      from: `${documentName} CSS example ${index + 1}`,
+    });
+
+    root.walkRules((rule) => {
+      for (const rawSelector of rule.selectors) {
+        const selector = rawSelector.replace(/\s+/gu, " ").trim();
+        assert.doesNotMatch(
+          selector,
+          /^h[2-5]::?before\b/iu,
+          `${documentName} has an unscoped heading selector: ${selector}`,
+        );
+        if (selector.includes(".table-of-contents")) {
+          assert.match(
+            selector,
+            /^\.main-wrapper\b/u,
+            `${documentName} has an unscoped TOC selector: ${selector}`,
+          );
+        }
+      }
+    });
+  }
+}
+
+function appendCssExample(document, selector) {
+  return `${document}\n\n\`\`\`css\n${selector} {\n  color: red;\n}\n\`\`\`\n`;
 }
 
 const readme = read("README.md");
@@ -73,7 +139,7 @@ test("README documents exact per-document behavior and safe CSS customization", 
   assert.match(readme, /:has\(\)/u);
   assert.match(readme, /:is\(\)/u);
   assert.match(readme, /modern browser/u);
-  assert.doesNotMatch(readme, /```css\s*\nh2::before,/u);
+  assertScopedCssExamples(readme, "README");
   assert.match(readme, /\.theme-doc-markdown h2::before/u);
   for (const topic of [
     "No numbering",
@@ -123,14 +189,11 @@ test("migration guidance covers the Docusaurus 3 upgrade and module contract", (
     migration,
     /npm run verify.*contributors.*only; package consumers should build and test their own Docusaurus site/isu,
   );
+  assertScopedCssExamples(migration, "MIGRATION");
 });
 
 test("changelog keeps 2.0.0 as an unreleased release candidate with compact history", () => {
-  assert.match(changelog, /^## 2\.0\.0 - Unreleased \(release candidate\)$/m);
-  assert.doesNotMatch(
-    changelog,
-    /2\.0\.0.*(?:published|GitHub Release|^.*tag)/imu,
-  );
+  assertUnreleasedReleaseCandidate(changelog);
   for (const topic of [
     "Breaking changes",
     "CommonJS",
@@ -152,6 +215,47 @@ test("changelog keeps 2.0.0 as an unreleased release candidate with compact hist
     "1.0.0",
   ]) {
     assert.match(changelog, new RegExp(topic, "iu"));
+  }
+});
+
+test("changelog status guard rejects positive release claims throughout the 2.0 section", () => {
+  for (const claim of [
+    "This release candidate is published.",
+    "Version 2.0 is tagged.",
+    "Version 2.0 is a GitHub Release.",
+  ]) {
+    const mutated = changelog.replace(
+      "This release candidate is not published, tagged, or a GitHub Release.",
+      claim,
+    );
+
+    assert.throws(
+      () => assertUnreleasedReleaseCandidate(mutated),
+      { name: "AssertionError" },
+      `positive status claim escaped detection: ${claim}`,
+    );
+  }
+});
+
+test("CSS example guard rejects unsafe heading and TOC selector mutations", () => {
+  for (const selector of [
+    "h2::before",
+    "h3::before",
+    "h4::before",
+    "h5::before",
+    ".table-of-contents > li::before",
+  ]) {
+    for (const [name, document] of [
+      ["README", readme],
+      ["MIGRATION", migration],
+    ]) {
+      assert.throws(
+        () =>
+          assertScopedCssExamples(appendCssExample(document, selector), name),
+        { name: "AssertionError" },
+        `${name} unsafe selector escaped detection: ${selector}`,
+      );
+    }
   }
 });
 
