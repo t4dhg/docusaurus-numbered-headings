@@ -52,16 +52,24 @@
 }
 
 /* Table of Contents Numbering - Spanish Forense Convention */
-.main-wrapper .theme-doc-toc-desktop .table-of-contents > li::before {
+.main-wrapper
+  :is(.theme-doc-toc-desktop, .theme-doc-toc-mobile)
+  .table-of-contents
+  > li::before {
   content: counter(toc-h2, upper-roman) ". ";
 }
 
-.main-wrapper .theme-doc-toc-desktop .table-of-contents > li > ul > li::before {
+.main-wrapper
+  :is(.theme-doc-toc-desktop, .theme-doc-toc-mobile)
+  .table-of-contents
+  > li
+  > ul
+  > li::before {
   content: counter(toc-h3, spanish-ordinal) ".- ";
 }
 
 .main-wrapper
-  .theme-doc-toc-desktop
+  :is(.theme-doc-toc-desktop, .theme-doc-toc-mobile)
   .table-of-contents
   > li
   > ul
@@ -72,7 +80,7 @@
 }
 
 .main-wrapper
-  .theme-doc-toc-desktop
+  :is(.theme-doc-toc-desktop, .theme-doc-toc-mobile)
   .table-of-contents
   > li
   > ul
@@ -93,25 +101,25 @@
 }
 
 .main-wrapper:has(.theme-doc-markdown .disable_numbered_headings)
-  .theme-doc-toc-desktop
+  :is(.theme-doc-toc-desktop, .theme-doc-toc-mobile)
   .table-of-contents
   > li::before,
 .main-wrapper:has(.theme-doc-markdown .disable_numbered_headings)
-  .theme-doc-toc-desktop
+  :is(.theme-doc-toc-desktop, .theme-doc-toc-mobile)
   .table-of-contents
-  > li
-  > ul
-  > li::before,
-.main-wrapper:has(.theme-doc-markdown .disable_numbered_headings)
-  .theme-doc-toc-desktop
-  .table-of-contents
-  > li
-  > ul
   > li
   > ul
   > li::before,
 .main-wrapper:has(.theme-doc-markdown .disable_numbered_headings)
-  .theme-doc-toc-desktop
+  :is(.theme-doc-toc-desktop, .theme-doc-toc-mobile)
+  .table-of-contents
+  > li
+  > ul
+  > li
+  > ul
+  > li::before,
+.main-wrapper:has(.theme-doc-markdown .disable_numbered_headings)
+  :is(.theme-doc-toc-desktop, .theme-doc-toc-mobile)
   .table-of-contents
   > li
   > ul

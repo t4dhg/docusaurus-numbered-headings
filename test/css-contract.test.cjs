@@ -27,7 +27,8 @@ const roots = new Map(
 );
 
 const documentRoot = ".theme-doc-markdown";
-const tocRoot = ".main-wrapper .theme-doc-toc-desktop .table-of-contents";
+const tocContainers = ":is(.theme-doc-toc-desktop, .theme-doc-toc-mobile)";
+const tocRoot = `.main-wrapper ${tocContainers} .table-of-contents`;
 
 const headingCounters = [
   ["h2", { "counter-increment": "h2counter", "counter-reset": "h3counter" }],
@@ -133,7 +134,7 @@ function assertDeclarations(root, selector, expected) {
   assert.deepEqual(declarationMap(root, selector), expected, selector);
 }
 
-test("scopes all document and right-rail selectors to Docusaurus containers", () => {
+test("scopes all document and TOC selectors to Docusaurus containers", () => {
   for (const [file, root] of roots) {
     root.walkRules((rule) => {
       for (const rawSelector of rule.selectors) {
@@ -159,8 +160,8 @@ test("scopes all document and right-rail selectors to Docusaurus containers", ()
         if (selector.includes(".table-of-contents")) {
           assert.match(
             selector,
-            /^\.main-wrapper(?::has\([^)]*\))? \.theme-doc-toc-desktop \.table-of-contents/u,
-            `${file}: unscoped right-rail selector ${selector}`,
+            /^\.main-wrapper(?::has\([^)]*\))? :is\(\.theme-doc-toc-desktop, \.theme-doc-toc-mobile\) \.table-of-contents/u,
+            `${file}: TOC selector does not cover desktop and mobile ${selector}`,
           );
         }
       }
@@ -197,13 +198,23 @@ test("preserves base counter setup and both opt-out class spellings", () => {
     "counter-reset": "h2counter h3counter h4counter h5counter",
   });
 
-  const disabledTocRoot =
-    ".main-wrapper:has(.theme-doc-markdown .disable_numbered_headings) .theme-doc-toc-desktop .table-of-contents";
+  const disabledTocRoot = `.main-wrapper:has(.theme-doc-markdown .disable_numbered_headings) ${tocContainers} .table-of-contents`;
   for (const suffix of tocPseudoLevels) {
     assertDeclarations(root, disabledTocRoot + suffix, {
       content: "none !important",
     });
   }
+});
+
+test("preserves TOC link and list layout on desktop and mobile", () => {
+  const root = roots.get("src/numbered-headings.css");
+
+  assertDeclarations(root, `${tocRoot} a.table-of-contents__link`, {
+    display: "inline !important",
+  });
+  assertDeclarations(root, `${tocRoot} li`, {
+    "list-style": "none",
+  });
 });
 
 for (const convention of conventions) {
@@ -228,7 +239,7 @@ for (const convention of conventions) {
     const root = roots.get(`src/styles/${convention.name}-override.css`);
     const overrideClass = `.numbered_headings_${convention.name.replaceAll("-", "_")}`;
     const headingRoot = `${documentRoot} ${overrideClass}`;
-    const overrideTocRoot = `.main-wrapper:has(${headingRoot}) .theme-doc-toc-desktop .table-of-contents`;
+    const overrideTocRoot = `.main-wrapper:has(${headingRoot}) ${tocContainers} .table-of-contents`;
 
     headingCounters.forEach(([level, declarations], index) => {
       assertDeclarations(root, `${headingRoot} ${level}`, declarations);

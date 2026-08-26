@@ -48,17 +48,17 @@
   content: counter(h5counter, lower-alpha) ". ";
 }
 
-/* The right-rail TOC lives outside the wrapped document body. */
+/* The TOC containers live outside the wrapped document body. */
 
 .main-wrapper:has(.theme-doc-markdown .numbered_headings_spanish_forense)
-  .theme-doc-toc-desktop
+  :is(.theme-doc-toc-desktop, .theme-doc-toc-mobile)
   .table-of-contents
   > li::before {
   content: counter(toc-h2, upper-roman) ". ";
 }
 
 .main-wrapper:has(.theme-doc-markdown .numbered_headings_spanish_forense)
-  .theme-doc-toc-desktop
+  :is(.theme-doc-toc-desktop, .theme-doc-toc-mobile)
   .table-of-contents
   > li
   > ul
@@ -67,7 +67,7 @@
 }
 
 .main-wrapper:has(.theme-doc-markdown .numbered_headings_spanish_forense)
-  .theme-doc-toc-desktop
+  :is(.theme-doc-toc-desktop, .theme-doc-toc-mobile)
   .table-of-contents
   > li
   > ul
@@ -78,7 +78,7 @@
 }
 
 .main-wrapper:has(.theme-doc-markdown .numbered_headings_spanish_forense)
-  .theme-doc-toc-desktop
+  :is(.theme-doc-toc-desktop, .theme-doc-toc-mobile)
   .table-of-contents
   > li
   > ul
