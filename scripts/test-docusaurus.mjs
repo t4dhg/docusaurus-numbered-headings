@@ -38,9 +38,21 @@ const npmInvocation = resolveNpmInvocation({
 
 const cases = [
   { name: "disabled", env: { DNH_ENABLED: "false" } },
-  { name: "iso", env: { DNH_CONVENTION: "iso-2145" } },
-  { name: "usa", env: { DNH_CONVENTION: "usa-classic" } },
-  { name: "spanish", env: { DNH_CONVENTION: "spanish-forense" } },
+  {
+    name: "iso",
+    env: { DNH_CONVENTION: "iso-2145" },
+    defaultDocumentH3Content: 'counter(h2counter) "." counter(h3counter) ". "',
+  },
+  {
+    name: "usa",
+    env: { DNH_CONVENTION: "usa-classic" },
+    defaultDocumentH3Content: 'counter(h3counter,upper-alpha) ". "',
+  },
+  {
+    name: "spanish",
+    env: { DNH_CONVENTION: "spanish-forense" },
+    defaultDocumentH3Content: 'counter(h3counter,spanish-ordinal) ".- "',
+  },
 ];
 
 const documentRoutes = [
@@ -175,6 +187,23 @@ function assertScopedCss(css) {
   );
 }
 
+function assertDefaultDocumentConventionCss(testCase, css) {
+  const normalized = css.replace(/\s+/gu, " ").replace(/\s*,\s*/gu, ",");
+  const content = testCase.defaultDocumentH3Content.replace(
+    /[.*+?^${}()|[\]\\]/gu,
+    "\\$&",
+  );
+
+  assert.match(
+    normalized,
+    new RegExp(
+      `\\.theme-doc-markdown h3(?::|::)before\\{content:${content}\\}`,
+      "u",
+    ),
+    `expected ${testCase.name} global convention content for the unwrapped default document`,
+  );
+}
+
 const temporaryRoot = await mkdtemp(join(tmpdir(), "dnh-docusaurus-test-"));
 const cacheDir = join(temporaryRoot, "npm-cache");
 const packDir = join(temporaryRoot, "pack");
@@ -250,6 +279,7 @@ try {
       );
     } else {
       assertScopedCss(css);
+      assertDefaultDocumentConventionCss(testCase, css);
     }
   }
 
