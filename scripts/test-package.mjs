@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { statSync } from "node:fs";
 import {
   copyFile,
   mkdir,
@@ -12,10 +13,25 @@ import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
+import {
+  assertSpawnSucceeded,
+  resolveNpmInvocation,
+} from "./command-utils.mjs";
 
 const rootDir = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const packageName = "docusaurus-numbered-headings";
-const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
+const npmInvocation = resolveNpmInvocation({
+  platform: process.platform,
+  nodeExecutable: process.execPath,
+  npmExecPath: process.env.npm_execpath,
+  isFile: (candidate) => {
+    try {
+      return statSync(candidate).isFile();
+    } catch {
+      return false;
+    }
+  },
+});
 const consumerDependencies = [
   "@docusaurus/core@3.10.2",
   "@docusaurus/types@3.10.2",
@@ -69,19 +85,16 @@ function run(command, args, { cwd = rootDir } = {}) {
     shell: false,
   });
 
-  if (result.error) throw result.error;
-  if (result.status !== 0) {
-    throw new Error(
-      [
-        `${command} ${args.join(" ")} exited with status ${result.status}`,
-        result.stdout.trim(),
-        result.stderr.trim(),
-      ]
-        .filter(Boolean)
-        .join("\n"),
-    );
-  }
+  assertSpawnSucceeded(command, args, result);
   return result.stdout;
+}
+
+function runNpm(args, options) {
+  return run(
+    npmInvocation.command,
+    [...npmInvocation.prefixArgs, ...args],
+    options,
+  );
 }
 
 async function writeJson(file, value) {
@@ -95,8 +108,7 @@ async function installConsumer(name, type, entryFile, entrySource, tarball) {
     private: true,
     type,
   });
-  run(
-    npmCommand,
+  runNpm(
     [
       "install",
       "--ignore-scripts",
@@ -107,7 +119,7 @@ async function installConsumer(name, type, entryFile, entrySource, tarball) {
     ],
     { cwd: consumerDir },
   );
-  run(npmCommand, ["ls", "--all"], { cwd: consumerDir });
+  runNpm(["ls", "--all"], { cwd: consumerDir });
   await writeFile(join(consumerDir, entryFile), entrySource);
   run(process.execPath, [entryFile], { cwd: consumerDir });
   return consumerDir;
@@ -188,7 +200,7 @@ try {
   await mkdir(cacheDir, { recursive: true });
   await mkdir(packDir, { recursive: true });
 
-  const packOutput = run(npmCommand, [
+  const packOutput = runNpm([
     "pack",
     "--json",
     "--ignore-scripts",
