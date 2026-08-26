@@ -1,86 +1,108 @@
 /* Docusaurus Numbered Headings Plugin Styles - ISO 2145 Convention */
 /* Format: 1, 1.1, 1.1.1, 1.1.1.1 (decimal numbering) */
 
-/* body {
-  counter-reset: h2counter;
-} */
-
 /* Starts on h2 because h1 is reserved for the title of the page in Docusaurus. */
 
-h2 {
+.theme-doc-markdown h2 {
   counter-increment: h2counter;
   counter-reset: h3counter;
 }
 
-h2::before {
+.theme-doc-markdown h2::before {
   content: counter(h2counter) ". ";
 }
 
-h3 {
+.theme-doc-markdown h3 {
   counter-increment: h3counter;
   counter-reset: h4counter;
 }
 
-h3::before {
+.theme-doc-markdown h3::before {
   content: counter(h2counter) "." counter(h3counter) ". ";
 }
 
-h4 {
+.theme-doc-markdown h4 {
   counter-increment: h4counter;
   counter-reset: h5counter;
 }
 
-h4::before {
+.theme-doc-markdown h4::before {
   content: counter(h2counter) "." counter(h3counter) "." counter(h4counter) ". ";
 }
 
-h5 {
+.theme-doc-markdown h5 {
   counter-increment: h5counter;
 }
 
-h5::before {
+.theme-doc-markdown h5::before {
   content: counter(h2counter) "." counter(h3counter) "." counter(h4counter) "."
     counter(h5counter) ". ";
 }
 
 /* Table of Contents Numbering - ISO 2145 Convention */
-ul.table-of-contents > li::before {
+.main-wrapper .theme-doc-toc-desktop .table-of-contents > li::before {
   content: counter(toc-h2) ". ";
 }
 
-ul.table-of-contents > li > ul > li::before {
+.main-wrapper .theme-doc-toc-desktop .table-of-contents > li > ul > li::before {
   content: counter(toc-h2) "." counter(toc-h3) ". ";
 }
 
-ul.table-of-contents > li > ul > li > ul > li::before {
+.main-wrapper
+  .theme-doc-toc-desktop
+  .table-of-contents
+  > li
+  > ul
+  > li
+  > ul
+  > li::before {
   content: counter(toc-h2) "." counter(toc-h3) "." counter(toc-h4) ". ";
 }
 
-ul.table-of-contents > li > ul > li > ul > li > ul > li::before {
+.main-wrapper
+  .theme-doc-toc-desktop
+  .table-of-contents
+  > li
+  > ul
+  > li
+  > ul
+  > li
+  > ul
+  > li::before {
   content: counter(toc-h2) "." counter(toc-h3) "." counter(toc-h4) "."
     counter(toc-h5) ". ";
 }
 
 /* Disable ISO 2145 numbering within elements with disable_numbered_headings class */
-.disable_numbered_headings h2::before,
-.disable_numbered_headings h3::before,
-.disable_numbered_headings h4::before,
-.disable_numbered_headings h5::before {
+.theme-doc-markdown .disable_numbered_headings h2::before,
+.theme-doc-markdown .disable_numbered_headings h3::before,
+.theme-doc-markdown .disable_numbered_headings h4::before,
+.theme-doc-markdown .disable_numbered_headings h5::before {
   content: none !important;
 }
 
 /* Disable table of contents numbering for ISO 2145 within disable_numbered_headings */
-.disable_numbered_headings ul.table-of-contents > li::before,
-.disable_numbered_headings ul.table-of-contents > li > ul > li::before,
-.disable_numbered_headings
-  ul.table-of-contents
+.main-wrapper:has(.theme-doc-markdown .disable_numbered_headings)
+  .theme-doc-toc-desktop
+  .table-of-contents
+  > li::before,
+.main-wrapper:has(.theme-doc-markdown .disable_numbered_headings)
+  .theme-doc-toc-desktop
+  .table-of-contents
+  > li
+  > ul
+  > li::before,
+.main-wrapper:has(.theme-doc-markdown .disable_numbered_headings)
+  .theme-doc-toc-desktop
+  .table-of-contents
   > li
   > ul
   > li
   > ul
   > li::before,
-.disable_numbered_headings
-  ul.table-of-contents
+.main-wrapper:has(.theme-doc-markdown .disable_numbered_headings)
+  .theme-doc-toc-desktop
+  .table-of-contents
   > li
   > ul
   > li

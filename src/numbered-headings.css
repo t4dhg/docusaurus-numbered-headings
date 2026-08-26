@@ -2,93 +2,115 @@
 /* Shared styles for all numbering conventions */
 
 /* Initialize counters for main content */
-body {
+.theme-doc-markdown {
   counter-reset: h2counter;
 }
 
 /* Initialize counters for table of contents */
-.table-of-contents {
+.main-wrapper .theme-doc-toc-desktop .table-of-contents {
   counter-reset: toc-h2;
 }
 
-.table-of-contents > li {
+.main-wrapper .theme-doc-toc-desktop .table-of-contents > li {
   counter-increment: toc-h2;
   counter-reset: toc-h3;
 }
 
-.table-of-contents > li > ul > li {
+.main-wrapper .theme-doc-toc-desktop .table-of-contents > li > ul > li {
   counter-increment: toc-h3;
   counter-reset: toc-h4;
 }
 
-.table-of-contents > li > ul > li > ul > li {
+.main-wrapper
+  .theme-doc-toc-desktop
+  .table-of-contents
+  > li
+  > ul
+  > li
+  > ul
+  > li {
   counter-increment: toc-h4;
   counter-reset: toc-h5;
 }
 
-.table-of-contents > li > ul > li > ul > li > ul > li {
+.main-wrapper
+  .theme-doc-toc-desktop
+  .table-of-contents
+  > li
+  > ul
+  > li
+  > ul
+  > li
+  > ul
+  > li {
   counter-increment: toc-h5;
 }
 
 /* Base styling for heading numbers */
-h2::before,
-h3::before,
-h4::before,
-h5::before {
+.theme-doc-markdown h2::before,
+.theme-doc-markdown h3::before,
+.theme-doc-markdown h4::before,
+.theme-doc-markdown h5::before {
   color: inherit;
   font-weight: inherit;
 }
 
 /* Make links inline to prevent line breaks after numbering */
-ul.table-of-contents li a.table-of-contents__link {
+.main-wrapper
+  .theme-doc-toc-desktop
+  .table-of-contents
+  a.table-of-contents__link {
   display: inline !important;
 }
-a.table-of-contents__link {
-  display: inline !important;
-}
-ul.table-of-contents * {
+.main-wrapper .theme-doc-toc-desktop .table-of-contents li {
   list-style: none;
 }
 
 /* Disable numbered headings within elements with disable_numbered_headings class */
-.disable_numbered_headings h2::before,
-.disable_numbered_headings h3::before,
-.disable_numbered_headings h4::before,
-.disable_numbered_headings h5::before {
+.theme-doc-markdown .disable_numbered_headings h2::before,
+.theme-doc-markdown .disable_numbered_headings h3::before,
+.theme-doc-markdown .disable_numbered_headings h4::before,
+.theme-doc-markdown .disable_numbered_headings h5::before {
   content: none !important;
 }
 
 /* Reset counters for headings inside disable_numbered_headings to prevent interference */
-.disable_numbered_headings {
+.theme-doc-markdown .disable_numbered_headings {
   counter-reset: h2counter h3counter h4counter h5counter;
 }
 
 /* Disable numbered headings when the class is applied */
-.disable-numbered-headings h2::before,
-.disable-numbered-headings h3::before,
-.disable-numbered-headings h4::before,
-.disable-numbered-headings h5::before {
+.theme-doc-markdown .disable-numbered-headings h2::before,
+.theme-doc-markdown .disable-numbered-headings h3::before,
+.theme-doc-markdown .disable-numbered-headings h4::before,
+.theme-doc-markdown .disable-numbered-headings h5::before {
   display: none !important;
 }
 
 /* When a doc opts out via frontmatter, the wrapper class lives inside the     */
 /* markdown body. The right-rail Table of Contents lives outside that body, so */
-/* we scope its suppression via :root:has(...) — requires modern browsers.     */
-:root:has(.disable_numbered_headings) ul.table-of-contents > li::before,
-:root:has(.disable_numbered_headings)
-  ul.table-of-contents
+/* we scope its suppression through the document layout — requires :has().     */
+.main-wrapper:has(.theme-doc-markdown .disable_numbered_headings)
+  .theme-doc-toc-desktop
+  .table-of-contents
+  > li::before,
+.main-wrapper:has(.theme-doc-markdown .disable_numbered_headings)
+  .theme-doc-toc-desktop
+  .table-of-contents
   > li
   > ul
   > li::before,
-:root:has(.disable_numbered_headings)
-  ul.table-of-contents
+.main-wrapper:has(.theme-doc-markdown .disable_numbered_headings)
+  .theme-doc-toc-desktop
+  .table-of-contents
   > li
   > ul
   > li
   > ul
   > li::before,
-:root:has(.disable_numbered_headings)
-  ul.table-of-contents
+.main-wrapper:has(.theme-doc-markdown .disable_numbered_headings)
+  .theme-doc-toc-desktop
+  .table-of-contents
   > li
   > ul
   > li

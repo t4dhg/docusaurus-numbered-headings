@@ -1,5 +1,5 @@
 /* Per-document override: force Spanish Forense inside .numbered_headings_spanish_forense */
-/* Scoped rules win over the unscoped global rules by class specificity.                  */
+/* Document-specific rules win over the global rules by class specificity.               */
 
 /* @counter-style is global by name; redefining here keeps the override file
    self-contained when the global convention isn't Spanish Forense. The
@@ -13,50 +13,52 @@
   suffix: "";
 }
 
-.numbered_headings_spanish_forense h2 {
+.theme-doc-markdown .numbered_headings_spanish_forense h2 {
   counter-increment: h2counter;
   counter-reset: h3counter;
 }
 
-.numbered_headings_spanish_forense h2::before {
+.theme-doc-markdown .numbered_headings_spanish_forense h2::before {
   content: counter(h2counter, upper-roman) ". ";
 }
 
-.numbered_headings_spanish_forense h3 {
+.theme-doc-markdown .numbered_headings_spanish_forense h3 {
   counter-increment: h3counter;
   counter-reset: h4counter;
 }
 
-.numbered_headings_spanish_forense h3::before {
+.theme-doc-markdown .numbered_headings_spanish_forense h3::before {
   content: counter(h3counter, spanish-ordinal) ".- ";
 }
 
-.numbered_headings_spanish_forense h4 {
+.theme-doc-markdown .numbered_headings_spanish_forense h4 {
   counter-increment: h4counter;
   counter-reset: h5counter;
 }
 
-.numbered_headings_spanish_forense h4::before {
+.theme-doc-markdown .numbered_headings_spanish_forense h4::before {
   content: counter(h4counter, decimal) ". ";
 }
 
-.numbered_headings_spanish_forense h5 {
+.theme-doc-markdown .numbered_headings_spanish_forense h5 {
   counter-increment: h5counter;
 }
 
-.numbered_headings_spanish_forense h5::before {
+.theme-doc-markdown .numbered_headings_spanish_forense h5::before {
   content: counter(h5counter, lower-alpha) ". ";
 }
 
-/* TOC override via :has() — the right-rail TOC lives outside the wrapped body. */
+/* The right-rail TOC lives outside the wrapped document body. */
 
-:root:has(.numbered_headings_spanish_forense)
+.main-wrapper:has(.theme-doc-markdown .numbered_headings_spanish_forense)
+  .theme-doc-toc-desktop
   .table-of-contents
   > li::before {
   content: counter(toc-h2, upper-roman) ". ";
 }
 
-:root:has(.numbered_headings_spanish_forense)
+.main-wrapper:has(.theme-doc-markdown .numbered_headings_spanish_forense)
+  .theme-doc-toc-desktop
   .table-of-contents
   > li
   > ul
@@ -64,7 +66,8 @@
   content: counter(toc-h3, spanish-ordinal) ".- ";
 }
 
-:root:has(.numbered_headings_spanish_forense)
+.main-wrapper:has(.theme-doc-markdown .numbered_headings_spanish_forense)
+  .theme-doc-toc-desktop
   .table-of-contents
   > li
   > ul
@@ -74,7 +77,8 @@
   content: counter(toc-h4, decimal) ". ";
 }
 
-:root:has(.numbered_headings_spanish_forense)
+.main-wrapper:has(.theme-doc-markdown .numbered_headings_spanish_forense)
+  .theme-doc-toc-desktop
   .table-of-contents
   > li
   > ul
