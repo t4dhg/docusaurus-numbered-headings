@@ -33,3 +33,14 @@ Add or update tests and public documentation whenever behavior or the public con
 Use an issue for reproducible bugs or narrowly described proposals. For vulnerabilities, follow [SECURITY.md](SECURITY.md) instead of opening a public issue.
 
 Contributors do not manually bump versions, publish packages, create tags, or create a Release. Merged contributions do not authorize a release; only the maintainer-owned release workflow may publish after review.
+
+## Maintainer release procedure
+
+Releases remain a separate maintainer decision after ordinary contribution review:
+
+1. Finalize `CHANGELOG.md` and the package version in one reviewed commit. Run `npm run verify` and review the resulting package metadata before approval.
+2. Land that reviewed commit on protected `master` after the exact `quality` status check passes. Confirm the intended release commit is the current commit on `origin/master`.
+3. Create and push the prevalidated annotated `vMAJOR.MINOR.PATCH` tag for that exact commit. Before pushing it, confirm the tag is canonical stable SemVer, matches the package version, peels to the reviewed commit, and that the commit is contained in `origin/master`.
+4. Observe the complete Release workflow. Treat the release as complete only after the workflow verifies the published npm bytes and provenance and then verifies the matching stable GitHub Release.
+
+The workflow never commits, bumps a version, creates a tag, or pushes a ref. A failed or interrupted run must be investigated and safely rerun through its exact-state checks; do not replace or move the release tag.

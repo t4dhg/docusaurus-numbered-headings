@@ -81,7 +81,8 @@
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "tsup": "8.5.1",
-    "typescript": "5.9.3"
+    "typescript": "5.9.3",
+    "yaml": "2.9.0"
   },
   "repository": {
     "type": "git",

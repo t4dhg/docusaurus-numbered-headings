@@ -17,9 +17,18 @@ import {
   assertSpawnSucceeded,
   resolveNpmInvocation,
 } from "./command-utils.mjs";
+import {
+  expectedPackageFiles,
+  resolveSuppliedTarball,
+  validateTarballContract,
+} from "./check-release.mjs";
 
 const rootDir = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const packageName = "docusaurus-numbered-headings";
+const rootPackage = JSON.parse(
+  await readFile(join(rootDir, "package.json"), "utf8"),
+);
+const packageName = rootPackage.name;
+const packageVersion = rootPackage.version;
 const npmInvocation = resolveNpmInvocation({
   platform: process.platform,
   nodeExecutable: process.execPath,
@@ -41,26 +50,6 @@ const consumerDependencies = [
   "react-dom@18.3.1",
   "typescript@5.9.3",
 ];
-const expectedFiles = [
-  "CHANGELOG.md",
-  "CONTRIBUTING.md",
-  "LICENSE",
-  "MIGRATION.md",
-  "README.md",
-  "SECURITY.md",
-  "lib/index.d.mts",
-  "lib/index.d.ts",
-  "lib/index.js",
-  "lib/index.mjs",
-  "lib/numbered-headings.css",
-  "lib/styles/iso-2145-override.css",
-  "lib/styles/iso-2145.css",
-  "lib/styles/spanish-forense-override.css",
-  "lib/styles/spanish-forense.css",
-  "lib/styles/usa-classic-override.css",
-  "lib/styles/usa-classic.css",
-  "package.json",
-].sort();
 const expectedClientModules = [
   "numbered-headings.css",
   "styles/iso-2145.css",
@@ -200,23 +189,37 @@ try {
   await mkdir(cacheDir, { recursive: true });
   await mkdir(packDir, { recursive: true });
 
-  const packOutput = runNpm([
-    "pack",
-    "--json",
-    "--ignore-scripts",
-    "--pack-destination",
-    packDir,
-  ]);
-  const packReports = JSON.parse(packOutput);
-  assert.equal(packReports.length, 1);
-  const [packReport] = packReports;
-  assert.deepEqual(
-    packReport.files.map(({ path }) => path).sort(),
-    expectedFiles,
-  );
-
-  const tarball = join(packDir, packReport.filename);
+  const tarball = resolveSuppliedTarball(process.argv.slice(2), {
+    expectedName: packageName,
+    expectedVersion: packageVersion,
+    pack() {
+      const packOutput = runNpm([
+        "pack",
+        "--json",
+        "--ignore-scripts",
+        "--pack-destination",
+        packDir,
+      ]);
+      const packReports = JSON.parse(packOutput);
+      assert.equal(packReports.length, 1);
+      const [packReport] = packReports;
+      assert.equal(packReport.name, packageName);
+      assert.equal(packReport.version, packageVersion);
+      assert.deepEqual(
+        packReport.files.map(({ path }) => path).sort(),
+        expectedPackageFiles,
+      );
+      return join(packDir, packReport.filename);
+    },
+  });
   assert.equal((await stat(tarball)).isFile(), true);
+  assert.deepEqual(
+    validateTarballContract(await readFile(tarball), {
+      expectedName: packageName,
+      expectedVersion: packageVersion,
+    }),
+    expectedPackageFiles,
+  );
 
   const commonJsConsumerDir = await installConsumer(
     "commonjs-consumer",

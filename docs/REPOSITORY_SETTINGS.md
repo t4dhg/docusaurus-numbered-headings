@@ -69,6 +69,37 @@ See GitHub's documentation for
 and the [available rules](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets)
 before applying either proposal.
 
+## Proposed protected publishing prerequisites
+
+These publishing prerequisites are also proposals, not statements of live configuration. The captured GitHub baseline has no Actions environments, and the npm trusted-publisher state has not been authenticated and verified. Do not run the Release workflow until both prerequisites have been applied and independently re-read from their respective services.
+
+1. Create a GitHub Actions environment named exactly `npm-publish`.
+   - Add at least one required reviewer who is authorized to approve a public package release.
+   - Enable **Prevent self-review** and ensure at least one required reviewer is independent of the person who starts the deployment.
+   - Configure the environment to prevent administrators from bypassing its protection rules.
+   - Configure its deployment branch and tag policy to allow only protected tags matching `v*`.
+   - Do not add an npm token, environment secret, or repository secret for publication. The publish job receives only the GitHub OIDC identity permission.
+2. Configure the npm trusted publisher for the public `docusaurus-numbered-headings` package with exactly these values:
+
+   | npm trusted-publisher field | Required value                 |
+   | --------------------------- | ------------------------------ |
+   | npm user or organization    | `t4dhg`                        |
+   | Repository                  | `docusaurus-numbered-headings` |
+   | Workflow filename           | `release.yml`                  |
+   | Environment                 | `npm-publish`                  |
+   | Allowed action              | `npm publish`                  |
+
+After configuration, re-read the environment protections and trusted-publisher record. Confirm that the case-sensitive owner, repository, workflow filename, and environment exactly match the table before pushing any release tag.
+
+## Proposed post-publication token retirement
+
+Only after the first successful OIDC publication has been verified against the exact prepared tarball and its SLSA provenance:
+
+1. Disallow traditional npm automation tokens for this package where the npm controls permit it.
+2. Revoke obsolete automation tokens that were previously capable of publishing this package.
+
+If the OIDC publication or its registry verification fails, do not retire credentials as though the migration succeeded. Investigate the failure without creating a replacement tag or adding a token to the trusted-publishing workflow.
+
 ## Application checklist
 
 1. Re-capture the live baseline, including existing runs and exact check names.
@@ -76,7 +107,8 @@ before applying either proposal.
 3. Apply repository settings and security features deliberately, one group at a
    time.
 4. Create the branch and tag rulesets with no bypass actors.
-5. Open a pull request and confirm that the exact `quality` check is produced
+5. Apply and re-read the protected publishing prerequisites above without adding a long-lived npm publishing credential.
+6. Open a pull request and confirm that the exact `quality` check is produced
    and required before treating the branch ruleset as usable.
-6. Record the applied state separately; do not edit the status above merely
+7. Record the applied state separately; do not edit the status above merely
    because the proposal was reviewed.
