@@ -1,0 +1,57 @@
+name: Feature request
+description: Propose an improvement to docusaurus-numbered-headings
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What user need or limitation would this change address?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed-behavior
+    attributes:
+      label: Proposed behavior
+      description: Describe the observable package behavior you want.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Describe workarounds or alternative designs you considered.
+    validations:
+      required: true
+
+  - type: textarea
+    id: compatibility-impact
+    attributes:
+      label: Compatibility impact
+      description: Cover Docusaurus, Node.js, React, CommonJS/ESM, CSS, and migration implications where relevant.
+    validations:
+      required: true
+
+  - type: textarea
+    id: documentation-tests
+    attributes:
+      label: Documentation and test expectations
+      description: What documentation and automated tests should demonstrate this behavior?
+    validations:
+      required: true
+
+  - type: dropdown
+    id: release-impact
+    attributes:
+      label: Expected release impact
+      options:
+        - Patch (backward-compatible refinement)
+        - Minor (backward-compatible feature)
+        - Major (breaking change)
+        - Unsure
+    validations:
+      required: true

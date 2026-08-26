@@ -1,0 +1,101 @@
+name: Bug report
+description: Report a reproducible problem with docusaurus-numbered-headings
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve the package. Security vulnerabilities must be reported privately through the [security advisory form](https://github.com/t4dhg/docusaurus-numbered-headings/security/advisories/new), not in a public issue.
+
+  - type: input
+    id: package-version
+    attributes:
+      label: Package version
+      placeholder: 2.0.0
+    validations:
+      required: true
+
+  - type: input
+    id: docusaurus-version
+    attributes:
+      label: Docusaurus version
+      placeholder: 3.10.2
+    validations:
+      required: true
+
+  - type: input
+    id: node-version
+    attributes:
+      label: Node.js version
+      placeholder: 20.19.0
+    validations:
+      required: true
+
+  - type: input
+    id: react-version
+    attributes:
+      label: React and React DOM versions
+      placeholder: react 19.2.0, react-dom 19.2.0
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Include the operating system, package manager and version, and relevant Docusaurus configuration.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: Link to a minimal repository or provide the smallest complete configuration and content that reproduces the problem.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs and diagnostics
+      description: Paste relevant output with credentials, tokens, and private content removed.
+      render: shell
+    validations:
+      required: true
+
+  - type: textarea
+    id: compatibility-impact
+    attributes:
+      label: Compatibility impact
+      description: Explain which Docusaurus, Node.js, React, module-format, or browser combinations are affected.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: release-impact
+    attributes:
+      label: Expected release impact
+      options:
+        - Patch (backward-compatible bug fix)
+        - Minor (backward-compatible behavior change)
+        - Major (breaking change)
+        - Unsure
+    validations:
+      required: true

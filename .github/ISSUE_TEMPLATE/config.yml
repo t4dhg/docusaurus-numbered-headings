@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security vulnerability
+    url: https://github.com/t4dhg/docusaurus-numbered-headings/security/advisories/new
+    about: Report vulnerabilities privately instead of opening a public issue.
+  - name: Questions and ideas
+    url: https://github.com/t4dhg/docusaurus-numbered-headings/discussions
+    about: Discussions is proposed and may remain unavailable until the repository setting is enabled.

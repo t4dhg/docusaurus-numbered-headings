@@ -1,64 +1,52 @@
-name: CI/CD Pipeline
+name: CI
 
 on:
   push:
-    branches: [main, master]
+    branches: [master]
   pull_request:
-    branches: [main, master]
-  release:
-    types: [published]
+    branches: [master]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  test:
+  verify-node:
+    name: Verify (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     strategy:
+      fail-fast: false
       matrix:
-        node-version: [16.x, 18.x, 20.x]
+        node-version: [20, 22, 24]
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: ${{ matrix.node-version }}
-          cache: "npm"
+          cache: npm
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Build package
-        run: npm run build
+      - name: Verify package
+        run: npm run verify
 
-      - name: Run tests
-        run: npm test || echo "No tests defined yet"
-
-      - name: Check package contents
-        run: npm pack --dry-run
-
-  publish:
-    needs: test
+  quality:
+    name: quality
+    if: ${{ always() }}
+    needs: verify-node
     runs-on: ubuntu-latest
-    if: github.event_name == 'release' && github.event.action == 'published'
-
+    timeout-minutes: 5
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Use Node.js 18.x
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18.x
-          registry-url: "https://registry.npmjs.org"
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build package
-        run: npm run build
-
-      - name: Publish to npm
-        run: npm publish
+      - name: Require a successful verification matrix
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          VERIFY_SUCCEEDED: ${{ needs.verify-node.result == 'success' }}
+        run: test "$VERIFY_SUCCEEDED" = "true"
