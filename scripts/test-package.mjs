@@ -3,9 +3,9 @@ import {
   copyFile,
   mkdir,
   mkdtemp,
+  readFile,
   rm,
   stat,
-  symlink,
   writeFile,
 } from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -16,6 +16,15 @@ import { fileURLToPath } from "node:url";
 const rootDir = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const packageName = "docusaurus-numbered-headings";
 const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
+const consumerDependencies = [
+  "@docusaurus/core@3.10.2",
+  "@docusaurus/types@3.10.2",
+  "@types/react@18.3.31",
+  "@types/react-dom@18.3.7",
+  "react@18.3.1",
+  "react-dom@18.3.1",
+  "typescript@5.9.3",
+];
 const expectedFiles = [
   "CHANGELOG.md",
   "CONTRIBUTING.md",
@@ -93,11 +102,12 @@ async function installConsumer(name, type, entryFile, entrySource, tarball) {
       "--ignore-scripts",
       "--no-audit",
       "--no-fund",
-      "--legacy-peer-deps",
       tarball,
+      ...consumerDependencies,
     ],
     { cwd: consumerDir },
   );
+  run(npmCommand, ["ls", "--all"], { cwd: consumerDir });
   await writeFile(join(consumerDir, entryFile), entrySource);
   run(process.execPath, [entryFile], { cwd: consumerDir });
   return consumerDir;
@@ -155,24 +165,13 @@ void plugin;
 void transform;
 `;
 
-async function linkDocusaurusTypes(consumerDir) {
-  const docusaurusScope = join(consumerDir, "node_modules", "@docusaurus");
-  await mkdir(docusaurusScope, { recursive: true });
-  await symlink(
-    resolve(rootDir, "node_modules", "@docusaurus", "types"),
-    join(docusaurusScope, "types"),
-    "junction",
-  );
-}
-
 function runTypeScript(consumerDir, entryFile) {
   run(
     process.execPath,
     [
-      resolve(rootDir, "node_modules", "typescript", "bin", "tsc"),
+      resolve(consumerDir, "node_modules", "typescript", "bin", "tsc"),
       "--noEmit",
       "--strict",
-      "--skipLibCheck",
       "--target",
       "ES2022",
       "--module",
@@ -222,19 +221,42 @@ try {
     tarball,
   );
 
-  await linkDocusaurusTypes(commonJsConsumerDir);
   await writeFile(
     join(commonJsConsumerDir, "typescript-consumer.cts"),
     commonJsTypescriptConsumer,
   );
   runTypeScript(commonJsConsumerDir, "typescript-consumer.cts");
 
-  await linkDocusaurusTypes(moduleConsumerDir);
   await copyFile(
     resolve(rootDir, "test", "fixtures", "typescript-consumer.mts"),
     join(moduleConsumerDir, "typescript-consumer.mts"),
   );
   runTypeScript(moduleConsumerDir, "typescript-consumer.mts");
+
+  const installedDocusaurusTypes = JSON.parse(
+    await readFile(
+      join(
+        moduleConsumerDir,
+        "node_modules",
+        "@docusaurus",
+        "types",
+        "package.json",
+      ),
+      "utf8",
+    ),
+  );
+  assert.equal(installedDocusaurusTypes.version, "3.10.2");
+
+  const installedMetadata = JSON.parse(
+    await readFile(
+      join(moduleConsumerDir, "node_modules", packageName, "package.json"),
+      "utf8",
+    ),
+  );
+  assert.equal(
+    installedMetadata.peerDependencies["@docusaurus/types"],
+    "^3.0.0",
+  );
 
   console.log("Packed package contract verified.");
 } finally {

@@ -6,6 +6,8 @@ test("declares the 2.x support and package contract", () => {
   assert.equal(pkg.version, "2.0.0");
   assert.equal(pkg.engines.node, ">=20.0.0");
   assert.equal(pkg.peerDependencies["@docusaurus/core"], "^3.0.0");
+  assert.equal(pkg.peerDependencies["@docusaurus/types"], "^3.0.0");
+  assert.equal(pkg.devDependencies["@docusaurus/types"], "3.10.2");
   assert.equal(pkg.peerDependencies.react, "^18.0.0 || ^19.0.0");
   assert.equal(pkg.peerDependencies["react-dom"], "^18.0.0 || ^19.0.0");
   assert.deepEqual(pkg.exports["."], {
