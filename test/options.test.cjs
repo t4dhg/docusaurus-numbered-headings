@@ -19,11 +19,16 @@ test("uses ISO 2145 and supplies five existing absolute client modules by defaul
   assert.deepEqual(modules, [
     path.resolve(__dirname, "../lib/numbered-headings.css"),
     path.resolve(__dirname, "../lib/styles/iso-2145.css"),
-    ...overrideModules.map((module) => path.resolve(__dirname, "../lib", module)),
+    ...overrideModules.map((module) =>
+      path.resolve(__dirname, "../lib", module),
+    ),
   ]);
   for (const module of modules) {
     assert.ok(path.isAbsolute(module));
-    assert.ok(fs.existsSync(module), `expected built asset to exist: ${module}`);
+    assert.ok(
+      fs.existsSync(module),
+      `expected built asset to exist: ${module}`,
+    );
   }
 });
 
@@ -35,7 +40,10 @@ for (const convention of conventions) {
   test(`uses the ${convention} convention stylesheet`, () => {
     const modules = plugin({}, { convention }).getClientModules();
 
-    assert.equal(modules[1], path.resolve(__dirname, `../lib/styles/${convention}.css`));
+    assert.equal(
+      modules[1],
+      path.resolve(__dirname, `../lib/styles/${convention}.css`),
+    );
     assert.ok(fs.existsSync(modules[1]));
   });
 }
@@ -50,16 +58,15 @@ test("rejects null plugin options", () => {
 test("rejects non-boolean enabled options", () => {
   assert.throws(() => plugin({}, { enabled: "false" }), {
     name: "TypeError",
-    message: '[docusaurus-numbered-headings] option "enabled" must be a boolean',
+    message:
+      '[docusaurus-numbered-headings] option "enabled" must be a boolean',
   });
 });
 
 test("rejects invalid conventions before resolving a missing stylesheet", () => {
-  assert.throws(
-    () => plugin({}, { convention: "legal" }),
-    {
-      name: "TypeError",
-      message: '[docusaurus-numbered-headings] option "convention" must be one of: iso-2145, usa-classic, spanish-forense; received "legal"',
-    }
-  );
+  assert.throws(() => plugin({}, { convention: "legal" }), {
+    name: "TypeError",
+    message:
+      '[docusaurus-numbered-headings] option "convention" must be one of: iso-2145, usa-classic, spanish-forense; received "legal"',
+  });
 });

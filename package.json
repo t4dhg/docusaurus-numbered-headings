@@ -31,10 +31,15 @@
   "scripts": {
     "clean": "node scripts/clean.mjs",
     "build": "npm run clean && tsup && node scripts/copy-assets.mjs",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "typecheck": "tsc --noEmit",
     "test:unit": "node --test test/*.test.cjs",
     "test:docusaurus": "node scripts/test-docusaurus.mjs",
     "test:package": "npm run build && node scripts/test-package.mjs",
+    "test": "npm run test:unit && npm run test:package && npm run test:docusaurus",
+    "audit:ci": "npm audit --omit=dev --audit-level=high",
+    "verify": "npm run format:check && npm run typecheck && npm run build && npm test && npm run audit:ci",
     "prepublishOnly": "npm run verify"
   },
   "keywords": [
@@ -66,7 +71,7 @@
     "@docusaurus/preset-classic": "3.10.2",
     "@docusaurus/types": "3.10.2",
     "@types/node": "20.19.43",
-    "postcss": "8.5.6",
+    "postcss": "8.5.26",
     "prettier": "3.9.6",
     "react": "19.2.8",
     "react-dom": "19.2.8",

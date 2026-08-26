@@ -19,11 +19,11 @@ A simple Docusaurus plugin that automatically adds numbered headings (1., 1.1., 
 
 ## Numbering conventions
 
-| Convention         | Code             | Structure Example         | Common In                       | Region         | Key Characteristics                                                                                                |
-| ------------------ | ---------------- | ------------------------- | ------------------------------- | -------------- | ------------------------------------------------------------------------------------------------------------------ |
-| Decimal (ISO 2145) | iso-2145         | 1, 1.1, 1.1.1             | Technical, Scientific, Academic | Europe, Global | Clean hierarchy; easy to reference; used in Docusaurus, LaTeX, academic papers, theses; ISO standard               |
-| Classical Outline  | usa-classic      | I, A, 1, a                | Academic essays, legal outlines | USA            | Multilevel styles for papers; common in school instruction; Roman numerals + letters + numbers + lowercase letters |
-| Spanish Forensic   | spanish-forense  | I, Primero.-, 1, a        | Legal escritos, MASC, judicial  | Spain          | Upper-roman + written-out Spanish ordinals (Primero, Segundo…) at h3 + decimal + lowercase; idiomatic forense style |
+| Convention         | Code            | Structure Example  | Common In                       | Region         | Key Characteristics                                                                                                 |
+| ------------------ | --------------- | ------------------ | ------------------------------- | -------------- | ------------------------------------------------------------------------------------------------------------------- |
+| Decimal (ISO 2145) | iso-2145        | 1, 1.1, 1.1.1      | Technical, Scientific, Academic | Europe, Global | Clean hierarchy; easy to reference; used in Docusaurus, LaTeX, academic papers, theses; ISO standard                |
+| Classical Outline  | usa-classic     | I, A, 1, a         | Academic essays, legal outlines | USA            | Multilevel styles for papers; common in school instruction; Roman numerals + letters + numbers + lowercase letters  |
+| Spanish Forensic   | spanish-forense | I, Primero.-, 1, a | Legal escritos, MASC, judicial  | Spain          | Upper-roman + written-out Spanish ordinals (Primero, Segundo…) at h3 + decimal + lowercase; idiomatic forense style |
 
 ### `iso-2145`
 
@@ -195,14 +195,14 @@ module.exports = {
 
 Then in any MDX file, use the `numbered_headings` frontmatter key to control numbering on that page:
 
-| Frontmatter value                       | Effect                                                                  |
-| --------------------------------------- | ----------------------------------------------------------------------- |
-| `numbered_headings: false`              | Disable auto-numbering entirely on this page                            |
-| `numbered_headings: "iso-2145"`         | Force ISO 2145 (`1`, `1.1`, `1.1.1`) on this page                       |
-| `numbered_headings: "usa-classic"`      | Force USA Classic (`I`, `A`, `1`, `a`) on this page                     |
-| `numbered_headings: "spanish-forense"`  | Force Spanish Forense (`I`, `Primero.-`, `1`, `a`) on this page         |
-| `numbered_headings: true`               | Explicit default (same as omitting the key)                             |
-| _(omitted)_                             | Use the convention configured in `docusaurus.config.js`                 |
+| Frontmatter value                      | Effect                                                          |
+| -------------------------------------- | --------------------------------------------------------------- |
+| `numbered_headings: false`             | Disable auto-numbering entirely on this page                    |
+| `numbered_headings: "iso-2145"`        | Force ISO 2145 (`1`, `1.1`, `1.1.1`) on this page               |
+| `numbered_headings: "usa-classic"`     | Force USA Classic (`I`, `A`, `1`, `a`) on this page             |
+| `numbered_headings: "spanish-forense"` | Force Spanish Forense (`I`, `Primero.-`, `1`, `a`) on this page |
+| `numbered_headings: true`              | Explicit default (same as omitting the key)                     |
+| _(omitted)_                            | Use the convention configured in `docusaurus.config.js`         |
 
 Example — a formal document with manually-written Roman numerals that should not be auto-numbered:
 

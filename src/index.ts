@@ -7,7 +7,7 @@ export type { Convention, PluginOptions } from "./options";
 
 export default function docusaurusNumberedHeadingsPlugin(
   _context: LoadContext,
-  options: PluginOptions = {}
+  options: PluginOptions = {},
 ): Plugin<void> {
   const { enabled, convention } = normalizeOptions(options);
 
