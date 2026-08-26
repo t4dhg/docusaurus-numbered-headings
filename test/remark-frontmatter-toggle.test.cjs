@@ -68,6 +68,9 @@ const invalidValues = [
   [undefined, "undefined"],
   [null, "null"],
   [7, "7"],
+  [NaN, "NaN"],
+  [Infinity, "Infinity"],
+  [-Infinity, "-Infinity"],
   [["iso-2145"], '["iso-2145"]'],
   [{ convention: "iso-2145" }, '{"convention":"iso-2145"}'],
   ["legal", '"legal"'],
@@ -91,6 +94,20 @@ for (const [value, received] of invalidValues) {
     );
   });
 }
+
+test("reports a cyclic invalid numbered_headings value safely", () => {
+  const cyclic = {};
+  cyclic.self = cyclic;
+
+  assert.throws(
+    () => transform([], { numbered_headings: cyclic }, "docs/example.mdx"),
+    {
+      name: "TypeError",
+      message:
+        '[docusaurus-numbered-headings] frontmatter "numbered_headings" in docs/example.mdx must be true, false, iso-2145, usa-classic, or spanish-forense; received {"self":"[Circular]"}',
+    },
+  );
+});
 
 test("reports invalid frontmatter without a path when none is available", () => {
   assert.throws(() => transform([], { numbered_headings: "legal" }), {

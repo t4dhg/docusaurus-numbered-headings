@@ -41,6 +41,27 @@ type VFileLike = {
 
 const TOP_LEVEL_PRESERVE = new Set(["mdxjsEsm", "yaml", "toml"]);
 
+function formatInvalidValue(value: unknown): string {
+  if (typeof value === "number" && !Number.isFinite(value)) {
+    return String(value);
+  }
+
+  const seen = new WeakSet<object>();
+  try {
+    const serialized = JSON.stringify(value, (_key, nestedValue: unknown) => {
+      if (typeof nestedValue !== "object" || nestedValue === null) {
+        return nestedValue;
+      }
+      if (seen.has(nestedValue)) return "[Circular]";
+      seen.add(nestedValue);
+      return nestedValue;
+    });
+    return serialized ?? String(value);
+  } catch {
+    return "[Unserializable]";
+  }
+}
+
 function classForFrontmatter(value: unknown, filePath?: string): string {
   if (value === false) return "disable_numbered_headings";
   if (value === "iso-2145") return "numbered_headings_iso_2145";
@@ -51,7 +72,7 @@ function classForFrontmatter(value: unknown, filePath?: string): string {
     '[docusaurus-numbered-headings] frontmatter "numbered_headings"' +
       (filePath ? ` in ${filePath}` : "") +
       " must be true, false, iso-2145, usa-classic, or spanish-forense; received " +
-      JSON.stringify(value),
+      formatInvalidValue(value),
   );
 }
 
