@@ -1,0 +1,5 @@
+node_modules/
+lib/
+test/fixtures/docusaurus-site/build/
+coverage/
+*.tgz
