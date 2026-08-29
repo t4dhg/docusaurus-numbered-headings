@@ -1271,7 +1271,7 @@ async function main(args) {
     if (rest.length !== 0) fail("preflight takes no arguments");
     preflightRelease({
       cwd: process.cwd(),
-      env: process.env,
+      env: { ...process.env },
       outputFile: process.env.GITHUB_OUTPUT,
     });
     return;

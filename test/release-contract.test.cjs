@@ -399,6 +399,27 @@ test("validates exact release metadata and ancestry in a disposable Git reposito
   );
 });
 
+test("the preflight CLI accepts Node's real process environment", (t) => {
+  const fixture = makePreflightRepository();
+  t.after(() => fs.rmSync(fixture.directory, { recursive: true, force: true }));
+  const outputFile = path.join(fixture.directory, "github-output-cli");
+  const result = spawnSync(process.execPath, [releaseScript, "preflight"], {
+    cwd: fixture.directory,
+    encoding: "utf8",
+    env: {
+      ...process.env,
+      ...fixture.env,
+      GITHUB_OUTPUT: outputFile,
+    },
+  });
+
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(
+    fs.readFileSync(outputFile, "utf8"),
+    `name=${packageName}\nversion=${packageVersion}\ntag=${releaseTag}\ncommit=${fixture.commit}\n`,
+  );
+});
+
 test("preflight fails closed for metadata, tag, commit, remote, and ancestry mismatches", async (t) => {
   const module = await releaseUtilities;
   const preflightRelease = requiredFunction(module, "preflightRelease");
