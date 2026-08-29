@@ -414,10 +414,7 @@ test("the preflight CLI accepts Node's real process environment", (t) => {
   });
 
   assert.equal(result.status, 0, result.stderr);
-  assert.equal(
-    fs.readFileSync(outputFile, "utf8"),
-    `name=${packageName}\nversion=${packageVersion}\ntag=${releaseTag}\ncommit=${fixture.commit}\n`,
-  );
+  assert.equal(fs.existsSync(outputFile), false);
 });
 
 test("the preflight CLI does not echo environment-derived values", async (t) => {
@@ -1470,37 +1467,18 @@ process.exit(2);
     ["missing", "missing", "1.6.0"],
     ["match", "match", packageVersion],
   ]) {
-    const outputFile = path.join(fixture.directory, `${mode}-output`);
     const result = run(
       process.execPath,
-      [
-        releaseScript,
-        "registry-state",
-        "--bundle",
-        fixture.bundleDirectory,
-        "--output-file",
-        outputFile,
-      ],
+      [releaseScript, "registry-state", "--bundle", fixture.bundleDirectory],
       { env: { ...baseEnv, FAKE_NPM_MODE: mode, FAKE_LATEST: latest } },
     );
     assert.equal(result.status, 0, result.stderr);
-    assert.equal(
-      fs.readFileSync(outputFile, "utf8"),
-      `registry_state=${expectedState}\n`,
-    );
+    assert.equal(result.stdout, `${expectedState}\n`);
   }
 
-  const networkOutput = path.join(fixture.directory, "network-output");
   const network = run(
     process.execPath,
-    [
-      releaseScript,
-      "registry-state",
-      "--bundle",
-      fixture.bundleDirectory,
-      "--output-file",
-      networkOutput,
-    ],
+    [releaseScript, "registry-state", "--bundle", fixture.bundleDirectory],
     {
       env: {
         ...baseEnv,
@@ -1510,20 +1488,12 @@ process.exit(2);
     },
   );
   assert.notEqual(network.status, 0);
-  assert.equal(fs.existsSync(networkOutput), false);
+  assert.equal(network.stdout, "");
   assert.match(network.stderr, /EAI_AGAIN|network|registry/i);
 
-  const rollbackOutput = path.join(fixture.directory, "rollback-output");
   const rollback = run(
     process.execPath,
-    [
-      releaseScript,
-      "registry-state",
-      "--bundle",
-      fixture.bundleDirectory,
-      "--output-file",
-      rollbackOutput,
-    ],
+    [releaseScript, "registry-state", "--bundle", fixture.bundleDirectory],
     {
       env: {
         ...baseEnv,
@@ -1533,23 +1503,12 @@ process.exit(2);
     },
   );
   assert.notEqual(rollback.status, 0);
-  assert.equal(fs.existsSync(rollbackOutput), false);
+  assert.equal(rollback.stdout, "");
   assert.match(rollback.stderr, /latest|rollback|newer/i);
 
-  const wrongFilenameOutput = path.join(
-    fixture.directory,
-    "wrong-filename-output",
-  );
   const wrongFilename = run(
     process.execPath,
-    [
-      releaseScript,
-      "registry-state",
-      "--bundle",
-      fixture.bundleDirectory,
-      "--output-file",
-      wrongFilenameOutput,
-    ],
+    [releaseScript, "registry-state", "--bundle", fixture.bundleDirectory],
     {
       env: {
         ...baseEnv,
@@ -1560,7 +1519,7 @@ process.exit(2);
     },
   );
   assert.notEqual(wrongFilename.status, 0);
-  assert.equal(fs.existsSync(wrongFilenameOutput), false);
+  assert.equal(wrongFilename.stdout, "");
   assert.match(wrongFilename.stderr, /filename|name|version/i);
 
   const invocations = fs
@@ -1644,6 +1603,21 @@ test("workflow uses three least-privilege jobs and immutable official actions", 
     "https://registry.npmjs.org",
   );
   assert.equal(publishSetupNode.with["registry-url"], undefined);
+
+  const metadata = prepare.steps.find(
+    (step) => step.name === "Validate release metadata",
+  );
+  assert.match(metadata.run, /node scripts\/check-release\.mjs preflight/u);
+  assert.match(metadata.run, />> "\$GITHUB_OUTPUT"/u);
+  assert.doesNotMatch(metadata.run, /--output-file/u);
+  const registry = publish.steps.find(
+    (step) => step.name === "Classify registry version",
+  );
+  assert.match(registry.run, /registry-state/u);
+  assert.match(registry.run, /case "\$registry_state" in/u);
+  assert.match(registry.run, /registry_state=%s/u);
+  assert.match(registry.run, />> "\$GITHUB_OUTPUT"/u);
+  assert.doesNotMatch(registry.run, /--output-file/u);
 
   const upload = prepare.steps.find((step) =>
     step.uses?.startsWith("actions/upload-artifact@"),

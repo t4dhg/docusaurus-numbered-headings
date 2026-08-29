@@ -1081,7 +1081,6 @@ function downloadRegistryTarball(expected, directory) {
 
 function registryStateCommand(options) {
   const bundleDirectory = resolve(options["--bundle"]);
-  const outputFile = resolve(options["--output-file"]);
   const manifest = validateReleaseBundle({ bundleDirectory });
   const expected = {
     name: manifest.name,
@@ -1096,8 +1095,7 @@ function registryStateCommand(options) {
         `refusing to publish ${manifest.version} because dist-tags.latest is not older: ${tags.latest}`,
       );
     }
-    appendOutputs(outputFile, { registry_state: "missing" });
-    return;
+    return "missing";
   }
   if (tags.latest !== manifest.version) {
     fail("existing exact version does not match dist-tags.latest");
@@ -1113,7 +1111,7 @@ function registryStateCommand(options) {
   } finally {
     rmSync(temporary, { recursive: true, force: true });
   }
-  appendOutputs(outputFile, { registry_state: "match" });
+  return "match";
 }
 
 function parseDistTags(result) {
@@ -1273,7 +1271,6 @@ async function main(args) {
       preflightRelease({
         cwd: process.cwd(),
         env: { ...process.env },
-        outputFile: process.env.GITHUB_OUTPUT,
       });
     } catch (error) {
       fail("release preflight failed", { cause: error });
@@ -1307,8 +1304,9 @@ async function main(args) {
     return;
   }
   if (mode === "registry-state") {
-    const options = parseOptions(rest, ["--bundle", "--output-file"]);
-    registryStateCommand(options);
+    const options = parseOptions(rest, ["--bundle"]);
+    const state = registryStateCommand(options);
+    process.stdout.write(`${state}\n`);
     return;
   }
   if (mode === "verify-registry") {

@@ -78,7 +78,10 @@ jobs:
           GITHUB_REF_NAME: ${{ github.ref_name }}
           GITHUB_REF_TYPE: ${{ github.ref_type }}
           GITHUB_SHA: ${{ github.sha }}
-        run: node scripts/check-release.mjs preflight
+        run: |
+          node scripts/check-release.mjs preflight
+          printf 'name=docusaurus-numbered-headings\nversion=%s\ntag=%s\ncommit=%s\n' \
+            "${GITHUB_REF_NAME#v}" "$GITHUB_REF_NAME" "$GITHUB_SHA" >> "$GITHUB_OUTPUT"
 
       - name: Install exact npm CLI
         run: |
@@ -231,9 +234,13 @@ jobs:
         env:
           BUNDLE_DIRECTORY: ${{ runner.temp }}/dnh-release-bundle
         run: |
-          node "$BUNDLE_DIRECTORY/check-release.mjs" registry-state \
-            --bundle "$BUNDLE_DIRECTORY" \
-            --output-file "$GITHUB_OUTPUT"
+          registry_state="$(node "$BUNDLE_DIRECTORY/check-release.mjs" registry-state \
+            --bundle "$BUNDLE_DIRECTORY")"
+          case "$registry_state" in
+            missing|match) ;;
+            *) exit 1 ;;
+          esac
+          printf 'registry_state=%s\n' "$registry_state" >> "$GITHUB_OUTPUT"
 
       - name: Publish exact tarball
         if: steps.registry.outputs.registry_state == 'missing'
