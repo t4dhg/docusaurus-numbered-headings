@@ -74,7 +74,7 @@
     "@docusaurus/core": "3.10.2",
     "@docusaurus/preset-classic": "3.10.2",
     "@docusaurus/types": "3.10.2",
-    "@types/node": "20.19.43",
+    "@types/node": "26.3.0",
     "postcss": "8.5.26",
     "postcss-selector-parser": "7.1.5",
     "prettier": "3.9.6",
