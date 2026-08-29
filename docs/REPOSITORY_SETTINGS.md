@@ -1,85 +1,56 @@
 # Repository settings
 
-> **Proposed — not yet applied.** This document records the intended repository configuration. Before making any change, re-verify the live repository state and review the resulting diff. Nothing in this document proves that a setting or ruleset is active.
+> **Applied baseline — verified 2026-08-29.**
 
-## Read-only baseline
+This document records the public repository controls that were applied and read back from GitHub and npm. It is an audit aid, not an authorization to tag or publish another release. Live state can drift, so re-read the services before each release.
 
-The following baseline was captured on 2026-08-26 using read-only repository
-and code-security queries:
+## Applied repository settings
 
-- The default branch is `master`.
-- No repository rulesets or branch protection rules exist.
-- Merge commits, rebases, and squash merges are all allowed.
-- Auto-merge and automatic deletion of merged branches are disabled.
-- Discussions is disabled.
-- The repository homepage is unset and the topic list is empty.
-- Private vulnerability reporting is disabled.
-- Dependabot security updates and automated security fixes are disabled.
-- CodeQL default setup is `not-configured`.
-- Secret scanning and push protection are enabled.
+- Squash merges are the only merge method; merge commits and rebase merges are disabled.
+- Auto-merge and update-branch suggestions are enabled, and merged head branches are deleted automatically.
+- GitHub Discussions is enabled.
+- The homepage is `https://www.npmjs.com/package/docusaurus-numbered-headings`.
+- The exact topics are `documentation`, `docusaurus`, `docusaurus-plugin`, `mdx`, and `numbered-headings`.
 
-Live state can change independently of this file. Re-capture it immediately
-before applying the proposal, and stop if it no longer matches this baseline.
+## Applied security and Actions controls
 
-## Proposed repository settings
+- Secret scanning, push protection, private vulnerability reporting, Dependabot alerts, Dependabot security updates, and automated security fixes are enabled.
+- CodeQL default setup is configured for JavaScript and TypeScript with the default query suite and the `remote_and_local` threat model.
+- GitHub-owned actions only are permitted; verified Marketplace and custom action patterns are not allowed.
+- SHA pinning is required, and every checked-in `uses:` reference uses a reviewed full-length commit SHA.
+- Default workflow token permissions are read-only and workflows cannot approve pull requests.
 
-- Allow squash merges only; disable merge commits and rebase merges.
-- Enable auto-merge, always suggest updating pull request branches, and delete
-  head branches automatically after merge.
-- Enable Discussions.
-- Enable private vulnerability reporting, Dependabot alerts, Dependabot
-  security updates, and CodeQL default setup.
-- Retain secret scanning and push protection.
-- Set the homepage to
-  `https://www.npmjs.com/package/docusaurus-numbered-headings`.
-- Set exactly these topics: `docusaurus`, `docusaurus-plugin`,
-  `numbered-headings`, `documentation`, and `mdx`.
+## Applied `master` branch ruleset
 
-GitHub documents these controls under
-[branches and merges](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository),
-[Dependabot](https://docs.github.com/en/code-security/tutorials/secure-your-dependencies/dependabot-quickstart),
-[private vulnerability reporting](https://docs.github.com/en/code-security/how-tos/report-and-fix-vulnerabilities/configure-vulnerability-reporting),
-and [CodeQL default setup](https://docs.github.com/en/code-security/how-tos/find-and-fix-code-vulnerabilities/configure-code-scanning/configure-code-scanning).
-
-## Proposed `master` branch ruleset
-
-Create one active branch ruleset with these exact properties:
+Master ruleset ID: `21795261`.
 
 - Target: `refs/heads/master`.
 - Bypass actors: none.
-- Block branch deletion and force pushes.
-- Require linear history.
-- Require changes to enter through a pull request.
-- Require all review threads to be resolved before merge.
-- Require the exact status check `quality`.
-- Required approvals: `0`, matching the single-maintainer workflow while still
-  enforcing the pull request, checks, and resolved-thread requirements.
+- Branch deletion and force pushes are blocked.
+- Linear history and pull requests are required.
+- Review threads must be resolved before merge.
+- The exact required status check is `quality`, with the branch required to be current.
+- Required approvals: `0`, matching the single-maintainer workflow while retaining the pull-request, status-check, and conversation-resolution gates.
 
-## Proposed release-tag ruleset
+## Applied release-tag ruleset
 
-Create one active tag ruleset with these exact properties:
+Release-tag ruleset ID: `21795263`.
 
 - Target: `refs/tags/v*`.
 - Bypass actors: none.
-- Block deletion and non-fast-forward updates.
-- Allow normal creation of new matching tags.
+- Deletion and non-fast-forward updates are blocked.
+- Normal creation of a new matching tag is allowed by the separately authorized release procedure.
 
-See GitHub's documentation for
-[creating rulesets](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/creating-rulesets-for-a-repository)
-and the [available rules](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets)
-before applying either proposal.
+## Applied protected publishing prerequisites
 
-## Proposed protected publishing prerequisites
+GitHub Actions environment ID: `20829939364`.
 
-These publishing prerequisites are also proposals, not statements of live configuration. The captured GitHub baseline has no Actions environments, and the npm trusted-publisher state has not been authenticated and verified. Do not run the Release workflow until both prerequisites have been applied and independently re-read from their respective services.
-
-1. Create a GitHub Actions environment named exactly `npm-publish`.
-   - Add at least one required reviewer who is authorized to approve a public package release.
-   - Enable **Prevent self-review** and ensure at least one required reviewer is independent of the person who starts the deployment.
-   - Configure the environment to prevent administrators from bypassing its protection rules.
-   - Configure its deployment branch and tag policy to allow only protected tags matching `v*`.
-   - Do not add an npm token, environment secret, or repository secret for publication. The publish job receives only the GitHub OIDC identity permission.
-2. Configure the npm trusted publisher for the public `docusaurus-numbered-headings` package with exactly these values:
+1. The GitHub Actions environment named exactly `npm-publish` has a five-minute wait timer.
+   - No required reviewer is configured because there is currently no independent release maintainer.
+   - Its custom deployment policy permits only tags matching `v*`.
+   - Administrators can bypass the environment; for this solo-maintainer repository, the compensating controls are the wait timer, immutable protected tags, pre-publication verification, and exact post-publication registry/provenance checks.
+   - The environment contains no npm token, environment publishing secret, or repository publishing secret. The publish job receives only GitHub OIDC identity permission.
+2. The npm trusted publisher was configured and re-read on 2026-08-29 with these exact values:
 
    | npm trusted-publisher field | Required value                 |
    | --------------------------- | ------------------------------ |
@@ -88,8 +59,6 @@ These publishing prerequisites are also proposals, not statements of live config
    | Workflow filename           | `release.yml`                  |
    | Environment                 | `npm-publish`                  |
    | Allowed action              | `npm publish`                  |
-
-After configuration, re-read the environment protections and trusted-publisher record. Confirm that the case-sensitive owner, repository, workflow filename, and environment exactly match the table before pushing any release tag.
 
 ## Proposed post-publication token retirement
 
@@ -100,15 +69,10 @@ Only after the first successful OIDC publication has been verified against the e
 
 If the OIDC publication or its registry verification fails, do not retire credentials as though the migration succeeded. Investigate the failure without creating a replacement tag or adding a token to the trusted-publishing workflow.
 
-## Application checklist
+## Release-use checklist
 
-1. Re-capture the live baseline, including existing runs and exact check names.
-2. Compare each proposed setting with the current GitHub UI or API response.
-3. Apply repository settings and security features deliberately, one group at a
-   time.
-4. Create the branch and tag rulesets with no bypass actors.
-5. Apply and re-read the protected publishing prerequisites above without adding a long-lived npm publishing credential.
-6. Open a pull request and confirm that the exact `quality` check is produced
-   and required before treating the branch ruleset as usable.
-7. Record the applied state separately; do not edit the status above merely
-   because the proposal was reviewed.
+1. Re-capture the live repository, environment, trusted-publisher, and npm version state.
+2. Finalize the version and changelog through a pull request that passes the required `quality` check.
+3. Create the exact reviewed annotated tag without moving any existing tag.
+4. Observe the entire Release workflow, including the environment delay.
+5. Treat the release as complete only after the exact registry bytes, signatures, provenance, dist-tag, and stable GitHub Release are verified.

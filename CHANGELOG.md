@@ -2,7 +2,7 @@
 
 Notable changes to this package are documented here.
 
-## 2.0.0 - Unreleased (release candidate)
+## 2.0.0 - 2026-08-29
 
 ### Breaking changes
 
@@ -15,10 +15,10 @@ Notable changes to this package are documented here.
 - CommonJS and ESM entry points with matching TypeScript declarations; the plugin is the default export and `remarkFrontmatterToggle` is named.
 - Per-document ISO 2145, USA Classic, Spanish Forense, and opt-out frontmatter behavior with path-aware validation errors.
 - CSS counter contract tests, package-consumer tests, and a Docusaurus fixture covering scoped document and TOC output.
-- CI, governance, documentation, and security preparation for the 2.0 release line.
+- CI, applied repository governance, documentation, and security controls for the 2.0 release line.
 - Contributor verification and release preparation documentation.
 
-This release candidate is not published, tagged, or a GitHub Release.
+Finalized for the reviewed 2.0.0 release on 2026-08-29.
 
 See [MIGRATION.md](MIGRATION.md) for upgrade instructions.
 
