@@ -420,24 +420,31 @@ test("the preflight CLI accepts Node's real process environment", (t) => {
   );
 });
 
-test("the preflight CLI does not echo environment-derived values", () => {
+test("the preflight CLI does not echo environment-derived values", async (t) => {
   const sentinel = "sentinel-environment-value";
-  const result = spawnSync(process.execPath, [releaseScript, "preflight"], {
-    encoding: "utf8",
-    env: {
-      ...process.env,
-      GITHUB_EVENT_NAME: "push",
-      GITHUB_REPOSITORY: sentinel,
-      GITHUB_REF_TYPE: "tag",
-      GITHUB_REF_NAME: releaseTag,
-      GITHUB_REF: `refs/tags/${releaseTag}`,
-      GITHUB_SHA: "0".repeat(40),
-    },
-  });
+  const baseline = {
+    GITHUB_EVENT_NAME: "push",
+    GITHUB_REPOSITORY: repositorySlug,
+    GITHUB_REF_TYPE: "tag",
+    GITHUB_REF_NAME: releaseTag,
+    GITHUB_REF: `refs/tags/${releaseTag}`,
+    GITHUB_SHA: "0".repeat(40),
+  };
 
-  assert.equal(result.status, 1);
-  assert.match(result.stderr, /release repository mismatch/);
-  assert.doesNotMatch(result.stderr, new RegExp(sentinel));
+  for (const [name, override] of [
+    ["repository", { GITHUB_REPOSITORY: sentinel }],
+    ["commit", { GITHUB_SHA: sentinel }],
+  ]) {
+    await t.test(name, () => {
+      const result = spawnSync(process.execPath, [releaseScript, "preflight"], {
+        encoding: "utf8",
+        env: { ...process.env, ...baseline, ...override },
+      });
+
+      assert.equal(result.status, 1);
+      assert.doesNotMatch(result.stderr, new RegExp(sentinel));
+    });
+  }
 });
 
 test("preflight fails closed for metadata, tag, commit, remote, and ancestry mismatches", async (t) => {

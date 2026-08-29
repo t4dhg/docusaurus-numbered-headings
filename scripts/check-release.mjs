@@ -1269,11 +1269,15 @@ async function main(args) {
   const [mode, ...rest] = args;
   if (mode === "preflight") {
     if (rest.length !== 0) fail("preflight takes no arguments");
-    preflightRelease({
-      cwd: process.cwd(),
-      env: { ...process.env },
-      outputFile: process.env.GITHUB_OUTPUT,
-    });
+    try {
+      preflightRelease({
+        cwd: process.cwd(),
+        env: { ...process.env },
+        outputFile: process.env.GITHUB_OUTPUT,
+      });
+    } catch (error) {
+      fail("release preflight failed", { cause: error });
+    }
     return;
   }
   if (mode === "prepare") {
