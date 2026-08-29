@@ -242,22 +242,27 @@ test("publishes private security reporting and 2.x support", () => {
   assert.doesNotMatch(security, /your-email@example\.com|within 48 hours/i);
 });
 
-test("marks repository settings as an unapplied proposal", () => {
+test("records the exact applied repository settings baseline", () => {
   const settings = exists("docs/REPOSITORY_SETTINGS.md")
     ? read("docs/REPOSITORY_SETTINGS.md")
     : "";
 
   assert.match(
     settings,
-    /^# Repository settings\n\n> \*\*Proposed — not yet applied\.\*\*/,
+    /^# Repository settings\n\n> \*\*Applied baseline — verified 2026-08-29\.\*\*/,
   );
-  assert.match(settings, /re-verify the live repository state/i);
+  assert.match(settings, /Master ruleset ID: `21795261`/);
+  assert.match(settings, /Release-tag ruleset ID: `21795263`/);
+  assert.match(settings, /GitHub Actions environment ID: `20829939364`/);
   assert.match(settings, /`quality`/);
   assert.match(settings, /`refs\/heads\/master`/);
   assert.match(settings, /`refs\/tags\/v\*`/);
+  assert.match(settings, /GitHub-owned actions only/iu);
+  assert.match(settings, /full-length commit SHA/iu);
+  assert.doesNotMatch(settings, /Proposed — not yet applied|not-configured/iu);
 });
 
-test("documents the maintainer release sequence and unapplied publishing prerequisites", () => {
+test("documents the maintainer release sequence and applied publishing prerequisites", () => {
   const contributing = read("CONTRIBUTING.md");
   const releaseHeading = contributing.indexOf(
     "## Maintainer release procedure",
@@ -286,17 +291,14 @@ test("documents the maintainer release sequence and unapplied publishing prerequ
   );
 
   const settings = read("docs/REPOSITORY_SETTINGS.md");
-  assert.match(settings, /## Proposed protected publishing prerequisites/);
+  assert.match(settings, /## Applied protected publishing prerequisites/);
   assert.match(
     settings,
-    /environment named exactly `npm-publish`[\s\S]*required reviewer[\s\S]*protected tags matching `v\*`/iu,
+    /environment named exactly `npm-publish`[\s\S]*five-minute wait timer[\s\S]*no required reviewer[\s\S]*tags matching `v\*`/iu,
   );
-  assert.match(
-    settings,
-    /prevent self-review[\s\S]*prevent administrators? from bypassing/iu,
-  );
+  assert.match(settings, /Administrators can bypass[\s\S]*solo-maintainer/iu);
   const publisherSection = settings
-    .split("## Proposed protected publishing prerequisites")[1]
+    .split("## Applied protected publishing prerequisites")[1]
     .split("## Proposed post-publication token retirement")[0];
   const publisherRows = publisherSection
     .split("\n")
@@ -316,6 +318,10 @@ test("documents the maintainer release sequence and unapplied publishing prerequ
     ["Environment", "`npm-publish`"],
     ["Allowed action", "`npm publish`"],
   ]);
+  assert.match(
+    publisherSection,
+    /trusted publisher was configured and re-read on 2026-08-29/iu,
+  );
   const firstOidcPublication = settings.indexOf(
     "first successful OIDC publication",
   );

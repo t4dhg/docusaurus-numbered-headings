@@ -12,10 +12,10 @@ function read(relativePath) {
   return fs.readFileSync(path.join(repositoryRoot, relativePath), "utf8");
 }
 
-function assertUnreleasedReleaseCandidate(document) {
-  const headingPattern = /^## 2\.0\.0 - Unreleased \(release candidate\)$/m;
+function assertFinalizedRelease(document) {
+  const headingPattern = /^## 2\.0\.0 - 2026-08-29$/m;
   const heading = headingPattern.exec(document);
-  assert.ok(heading, "missing the unreleased 2.0.0 release-candidate heading");
+  assert.ok(heading, "missing the finalized 2.0.0 release heading");
 
   const sectionStart = heading.index + heading[0].length;
   const remainingDocument = document.slice(sectionStart);
@@ -25,11 +25,11 @@ function assertUnreleasedReleaseCandidate(document) {
       ? remainingDocument
       : remainingDocument.slice(0, nextReleaseOffset);
   const explicitNegation =
-    "This release candidate is not published, tagged, or a GitHub Release.";
+    "Finalized for the reviewed 2.0.0 release on 2026-08-29.";
   assert.equal(
     section.split(explicitNegation).length - 1,
     1,
-    "2.0.0 must contain the exact explicit release-status negation once",
+    "2.0.0 must contain the exact finalization statement once",
   );
   const otherStatusText = section.replace(explicitNegation, "");
 
@@ -320,8 +320,8 @@ test("migration guidance covers the Docusaurus 3 upgrade and module contract", (
   assertScopedCssExamples(migration, "MIGRATION");
 });
 
-test("changelog keeps 2.0.0 as an unreleased release candidate with compact history", () => {
-  assertUnreleasedReleaseCandidate(changelog);
+test("changelog finalizes 2.0.0 with compact history", () => {
+  assertFinalizedRelease(changelog);
   for (const topic of [
     "Breaking changes",
     "CommonJS",
@@ -346,7 +346,7 @@ test("changelog keeps 2.0.0 as an unreleased release candidate with compact hist
   }
 });
 
-test("changelog status guard rejects positive release claims throughout the 2.0 section", () => {
+test("changelog status guard rejects premature publication claims throughout the 2.0 section", () => {
   for (const claim of [
     "This release candidate is published.",
     "Version 2.0 is tagged.",
@@ -361,20 +361,20 @@ test("changelog status guard rejects positive release claims throughout the 2.0 
     );
 
     assert.throws(
-      () => assertUnreleasedReleaseCandidate(mutated),
+      () => assertFinalizedRelease(mutated),
       { name: "AssertionError" },
       `positive status claim escaped detection: ${claim}`,
     );
   }
 });
 
-test("changelog status guard requires the exact explicit release-status negation", () => {
+test("changelog status guard requires the exact finalization statement", () => {
   const mutated = changelog.replace(
-    "This release candidate is not published, tagged, or a GitHub Release.",
+    "Finalized for the reviewed 2.0.0 release on 2026-08-29.",
     "This release candidate remains unreleased.",
   );
 
-  assert.throws(() => assertUnreleasedReleaseCandidate(mutated), {
+  assert.throws(() => assertFinalizedRelease(mutated), {
     name: "AssertionError",
   });
 });
