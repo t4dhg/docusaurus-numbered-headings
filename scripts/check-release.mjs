@@ -253,7 +253,7 @@ export function preflightRelease({ cwd, env, outputFile } = {}) {
   assertPlainObject(env, "release environment");
   if (env.GITHUB_EVENT_NAME !== "push") fail("release requires a push event");
   if (env.GITHUB_REPOSITORY !== releaseRepository) {
-    fail(`release repository mismatch: ${String(env.GITHUB_REPOSITORY)}`);
+    fail("release repository mismatch");
   }
   if (env.GITHUB_REF_TYPE !== "tag") fail("release ref type must be tag");
   const { tag, version } = validateStableTag(env.GITHUB_REF_NAME);
