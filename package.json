@@ -75,14 +75,14 @@
     "@docusaurus/preset-classic": "3.10.2",
     "@docusaurus/types": "3.10.2",
     "@types/node": "20.19.43",
-    "postcss": "8.5.26",
-    "postcss-selector-parser": "7.1.5",
-    "prettier": "3.9.6",
-    "react": "19.2.8",
-    "react-dom": "19.2.8",
+    "postcss": "8.5.28",
+    "postcss-selector-parser": "7.1.6",
+    "prettier": "3.9.7",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
     "tsup": "8.5.1",
     "typescript": "5.9.3",
-    "yaml": "2.9.0"
+    "yaml": "2.9.1"
   },
   "repository": {
     "type": "git",
